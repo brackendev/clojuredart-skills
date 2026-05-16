@@ -1,0 +1,8 @@
+interface:
+  display_name: "ClojureDart"
+  short_description: "Idiomatic ClojureDart syntax, Dart interop, and Flutter widget patterns."
+  default_prompt: "Review this ClojureDart code for idiomatic style."
+  brand_color: "#5881D8"
+
+policy:
+  allow_implicit_invocation: true

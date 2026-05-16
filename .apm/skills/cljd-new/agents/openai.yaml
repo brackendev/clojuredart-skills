@@ -1,0 +1,8 @@
+interface:
+  display_name: "ClojureDart New"
+  short_description: "Scaffold a new ClojureDart Flutter project."
+  default_prompt: "Run /cljd-new my-app."
+  brand_color: "#5881D8"
+
+policy:
+  allow_implicit_invocation: false

@@ -1,0 +1,8 @@
+interface:
+  display_name: "ClojureDart Test"
+  short_description: "Scaffold and run ClojureDart tests with cljd.test."
+  default_prompt: "Run /cljd-test."
+  brand_color: "#5881D8"
+
+policy:
+  allow_implicit_invocation: false

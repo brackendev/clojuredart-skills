@@ -1,0 +1,8 @@
+interface:
+  display_name: "ClojureDart Lenses"
+  short_description: "Translate code-lenses design philosophies to idiomatic ClojureDart and Flutter."
+  default_prompt: "Apply the grug lens to this ClojureDart code."
+  brand_color: "#5881D8"
+
+policy:
+  allow_implicit_invocation: true

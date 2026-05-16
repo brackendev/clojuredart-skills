@@ -1,0 +1,16 @@
+name: clojuredart-skills
+version: 0.1.0
+description: ClojureDart toolkit covering Flutter-aware idiomatic style, code translation, project scaffolding, quality checks, navigation, testing, upgrades, and code review.
+author: Bracken Spencer
+license: MIT
+target: all
+type: skill
+dependencies:
+  apm: []
+  mcp: []
+devDependencies:
+  apm: []
+compilation:
+  target: all
+  strategy: distributed
+  source_attribution: true

@@ -1,0 +1,8 @@
+interface:
+  display_name: "ClojureDart Navigation"
+  short_description: "Flutter navigation patterns in ClojureDart: named routes, go_router, tabs, deep links."
+  default_prompt: "Show me how to set up named routes in ClojureDart."
+  brand_color: "#5881D8"
+
+policy:
+  allow_implicit_invocation: true
