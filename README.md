@@ -4,7 +4,15 @@ ClojureDart development skills packaged as an [APM](https://github.com/microsoft
 
 Skills follow the [Agent Skills](https://agentskills.io) open standard. Three auto-trigger from conversation context (`clojuredart`, `clojuredart-lenses`, `cljd-nav`); the rest appear as slash commands.
 
-For the Clojure equivalents, see [clojure-skills](https://github.com/brackendev/clojure-skills).
+## Companion packages
+
+This package covers ClojureDart on Flutter. Install alongside it as needed:
+
+| Package | Focus |
+|---------|-------|
+| [clojure-skills](https://github.com/brackendev/clojure-skills) | Idiomatic Clojure style, scaffolding, quality checks, and code review. |
+| [biff-skills](https://github.com/brackendev/biff-skills) | [Biff](https://biffweb.com/) web framework: scaffolding, framework conventions, deployment. Layers on top of clojure-skills. |
+| [clojuredart-skills](https://github.com/brackendev/clojuredart-skills) (this package) | ClojureDart / Flutter equivalents for the Clojure toolkit. |
 
 ## Install
 
