@@ -2,9 +2,15 @@
 
 ## [Unreleased]
 
+## 0.1.2
+
 ### Removed
 
 - `MCP Integration` section in the `clojuredart` skill's `project-workflows.md` reference. The previous text claimed `clojure-mcp` could drive the ClojureDart REPL, but `clojure-mcp` connects over nREPL and ClojureDart exposes a socket REPL only. The host-neutral baseline already documents this scoping.
+
+### Changed
+
+- The `clojuredart` skill's REPL section now includes a recovery step: if the banner did not appear or the port file is missing, the build process is not running or the target is web, so restart `clj -M:cljd flutter` against a native Dart target. The note distinguishes this scenario from ordinary `nc` disconnects, which do not require a restart.
 
 ## 0.1.1
 

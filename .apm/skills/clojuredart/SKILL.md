@@ -669,6 +669,8 @@ nc localhost <port>
 
 Or from Emacs: `C-u M-x inferior-lisp` and enter `nc localhost <port>`.
 
+If the banner did not appear or the port file is missing, the build process is not running or the target is web. Restart `clj -M:cljd flutter` against a native Dart target (`-d <ios-sim-udid>`, `-d emulator-5554`, or a desktop target). Ordinary `nc` disconnects do not require a restart; see REPL Limitations below.
+
 Forms evaluate in the running Dart isolate. The default namespace is `cljd.user`. `pick!` and `mount!` (from `cljd.flutter.repl`) are referred by default. Special vars: `*1`, `*2`, `*3`, `*e`, and `*env` (bound after `pick!`). Switch namespace with `(ns my.app.core)`.
 
 ### Driving Live App State
