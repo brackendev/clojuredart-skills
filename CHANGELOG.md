@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## 0.1.3
+
+### Changed
+
+- The `clojuredart-lenses` skill description and `README.md` row now reflect the upstream code-lenses default-versus-opt-in split: `grug`, `Honest Code`, `Tidy First`, and `Parse Don't Validate` are the default lenses; `APOSD` and `Legacy Code` are opt-in (`+aposd`, `+legacy-code`, or direct invocation). The body still contains APOSD and Legacy Code Flutter-specific deltas so the lens can apply them when explicitly invoked.
+
 ## 0.1.2
 
 ### Removed

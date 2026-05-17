@@ -1,18 +1,22 @@
 ---
 name: clojuredart-lenses
 description: >-
-  Translate code-lenses design philosophies (grug, APOSD, Tidy First, Parse Don't
-  Validate, Honest Code, Legacy Code) into ClojureDart and Flutter-specific
+  Translate code-lenses design philosophies into ClojureDart and Flutter-specific
   patterns. Auto-triggers when working in ClojureDart alongside code-lenses
   skills. Layers on top of clojure-lenses (in clojure-skills) and covers only
   the deltas that come from `cljd.flutter`, Dart interop, widget composition,
-  and the Flutter widget lifecycle.
+  and the Flutter widget lifecycle. Covers the four default code-lenses
+  philosophies (grug, Honest Code, Tidy First, Parse Don't Validate) and the
+  two opt-in philosophies (APOSD, Legacy Code) that activate when their lens is
+  added with `+aposd` or `+legacy-code` or invoked directly.
 user-invocable: false
 ---
 
 # Code Lenses for ClojureDart
 
-Layered on top of [clojure-lenses](https://github.com/brackendev/clojure-skills) (in `clojure-skills`), which covers the host-neutral Clojure translations of grug, APOSD, Tidy First, Parse Don't Validate, Honest Code, and Legacy Code. This skill records only the ClojureDart and Flutter deltas that the baseline does not address: widget composition, `cljd.flutter` directives, lifecycle management, type hints at the Dart boundary, and the absence of `with-redefs`.
+Layered on top of [clojure-lenses](https://github.com/brackendev/clojure-skills) (in `clojure-skills`), which covers the host-neutral Clojure translations. This skill records only the ClojureDart and Flutter deltas that the baseline does not address: widget composition, `cljd.flutter` directives, lifecycle management, type hints at the Dart boundary, and the absence of `with-redefs`.
+
+The default code-lenses review set is `grug`, `honest-code`, `tidy-first`, and `parse-dont-validate`. `aposd` and `legacy-code` are opt-in (added with `+aposd` or `+legacy-code`, or invoked directly). The sections below apply when the corresponding lens is active; APOSD and Legacy Code translations are present so the lens can use them when explicitly invoked, but they are not part of the default trigger set.
 
 When the [code-lenses](https://github.com/brackendev/code-lenses) plugin is active in a ClojureDart project, use the baseline `clojure-lenses` translations first; reach for this skill for the Flutter-specific additions below.
 
