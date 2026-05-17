@@ -1,9 +1,5 @@
 # ClojureDart Project Workflows
 
-## MCP Integration
-
-This skill is designed to work with [clojure-mcp](https://github.com/bhauman/clojure-mcp), an MCP server for REPL-driven Clojure development. When clojure-mcp is available, use its tools for REPL evaluation, namespace reloading, and file operations instead of shell commands. The REPL practices in this skill apply when using clojure-mcp.
-
 ## CLI
 
 ```bash

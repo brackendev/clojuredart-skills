@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Removed
+
+- `MCP Integration` section in the `clojuredart` skill's `project-workflows.md` reference. The previous text claimed `clojure-mcp` could drive the ClojureDart REPL, but `clojure-mcp` connects over nREPL and ClojureDart exposes a socket REPL only. The host-neutral baseline already documents this scoping.
+
 ## 0.1.1
 
 ### Changed
