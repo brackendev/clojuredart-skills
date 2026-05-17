@@ -58,4 +58,4 @@ Runtime install (requires `apm` and the runtime CLIs you want to verify: `claude
 | `user-invocable: true`, `disable-model-invocation: true` | User-only slash command (for example `cljd-check`, `cljd-new`). |
 | `user-invocable: false` (or omitted) | Model-invoked from conversation context (for example `clojuredart`, `cljd-nav`). |
 
-Every skill carries `agents/openai.yaml` whose `policy.allow_implicit_invocation` matches the table above (`true` for model-invoked, `false` for user-only). All skills use the Clojure logo blue brand color, `#5881D8`.
+Every skill carries `agents/openai.yaml` whose `policy.allow_implicit_invocation` matches the table above (`true` for model-invoked, `false` for user-only). All skills use the Flutter blue brand color, `#02569B`, so runtime UIs can distinguish ClojureDart guidance from the host-neutral `clojure` baseline (`#5881D8`, Clojure logo blue) and from the JVM and Biff packages.

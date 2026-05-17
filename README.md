@@ -4,15 +4,18 @@ ClojureDart development skills packaged as an [APM](https://github.com/microsoft
 
 Skills follow the [Agent Skills](https://agentskills.io) open standard. Three auto-trigger from conversation context (`clojuredart`, `clojuredart-lenses`, `cljd-nav`); the rest appear as slash commands.
 
+This package layers on top of the host-neutral [clojure-skills](https://github.com/brackendev/clojure-skills) baseline. Install both together so the `clojure` skill handles general Clojure family style (naming, threading, collections, atoms, dispatch, formatting, namespaces, testing) and this package covers Dart interop, type hints and nullability, `cljd.flutter` directives, async, FFI, the ClojureDart socket REPL, and Flutter project layout.
+
 ## Companion packages
 
-This package covers ClojureDart on Flutter. Install alongside it as needed:
+Four sibling APM packages. This package layers on top of [clojure-skills](https://github.com/brackendev/clojure-skills) and covers Dart interop, type hints, `cljd.flutter` directives, async, FFI, and the Flutter project workflow. Install both together for ClojureDart work. The JVM and Biff packages are not required for ClojureDart-only projects.
 
-| Package | Focus |
-|---------|-------|
-| [clojure-skills](https://github.com/brackendev/clojure-skills) | Idiomatic Clojure style, scaffolding, quality checks, and code review. |
-| [biff-skills](https://github.com/brackendev/biff-skills) | [Biff](https://biffweb.com/) web framework: scaffolding, framework conventions, deployment. Layers on top of clojure-skills. |
-| [clojuredart-skills](https://github.com/brackendev/clojuredart-skills) (this package) | ClojureDart / Flutter equivalents for the Clojure toolkit. |
+| Package | Focus | Layers on |
+|---------|-------|-----------|
+| [clojure-skills](https://github.com/brackendev/clojure-skills) | Host-neutral Clojure family baseline (style, naming, threading, collections, atoms, dispatch, formatting, namespaces, testing). Triggers on `.clj`, `.cljs`, `.cljc`, `.cljd`. | — |
+| [clojure-jvm-skills](https://github.com/brackendev/clojure-jvm-skills) | JVM-specific Clojure (Java interop, refs / agents / STM, `with-open`, JVM-typed exceptions, `alter-var-root`, Clojure CLI / `tools.build` / `clj-kondo` / `cljfmt` / `test-runner` / nREPL workflow). | `clojure-skills` |
+| [biff-skills](https://github.com/brackendev/biff-skills) | [Biff](https://biffweb.com/) web framework on the JVM: scaffolding, conventions, deployment. | `clojure-skills` + `clojure-jvm-skills` |
+| [clojuredart-skills](https://github.com/brackendev/clojuredart-skills) (this package) | ClojureDart on Flutter: Dart interop, type hints, `cljd.flutter` directives, async, FFI, REPL, Flutter project workflow. Triggers on `.cljd`, `cljd.flutter`. | `clojure-skills` |
 
 ## Install
 
@@ -20,12 +23,14 @@ Install [APM](https://github.com/microsoft/apm) first if you don't already have 
 
 ```bash
 apm install brackendev/clojuredart-skills --target all
+apm install brackendev/clojure-skills --target all
 ```
 
 Globally for your user account:
 
 ```bash
 apm install brackendev/clojuredart-skills -g --target all
+apm install brackendev/clojure-skills -g --target all
 ```
 
 Update later with `apm update [-g]`. Remove with `apm uninstall brackendev/clojuredart-skills [-g]`. A local filesystem path can replace the shorthand at either scope.
@@ -33,6 +38,7 @@ Update later with `apm update [-g]`. Remove with `apm uninstall brackendev/cloju
 ## Requirements
 
 - [Flutter SDK](https://docs.flutter.dev/get-started/install) and [ClojureDart](https://github.com/Tensegritics/ClojureDart) for any skill in this package.
+- [clojure-skills](https://github.com/brackendev/clojure-skills) installed alongside, for the host-neutral baseline.
 - The `cljd-check` dry step requires a [dry4clj](https://github.com/unclebob/dry4clj) `:dry4clj` alias in `deps.edn`.
 
 ## Skills
@@ -83,8 +89,8 @@ These skills activate from conversation context. They cannot be invoked directly
 
 | Skill | Triggers |
 |-------|----------|
-| **clojuredart** | `.cljd` files, `deps.edn` with `tensegritics/clojuredart`, `cljd-out/` directories, Flutter integration, ClojureDart REPL usage. Covers syntax, Dart interop, widget macros, project structure, compilation, and REPL-driven development. |
-| **clojuredart-lenses** | Auto-triggers alongside the [code-lenses](https://github.com/brackendev/code-lenses) plugin in ClojureDart work. Translates grug, APOSD, Tidy First, Parse Don't Validate, Honest Code, and Legacy Code reviews into ClojureDart and Flutter patterns. |
+| **clojuredart** | `.cljd` files, `deps.edn` with `tensegritics/clojuredart`, `cljd-out/` directories, Flutter integration, ClojureDart REPL usage. Covers syntax, Dart interop, widget macros, project structure, compilation, REPL-driven development, the defrecord factory rule, and the absence of `with-redefs`. Defers to the [clojure](https://github.com/brackendev/clojure-skills) baseline for general style. |
+| **clojuredart-lenses** | Auto-triggers alongside the [code-lenses](https://github.com/brackendev/code-lenses) plugin in ClojureDart work. Layers on top of `clojure-lenses` and records only the Flutter-specific deltas to grug, APOSD, Tidy First, Parse Don't Validate, Honest Code, and Legacy Code translations. |
 | **cljd-nav** | ClojureDart navigation discussions: named routes, `go_router`, the `Navigator` API, tab navigation, and deep linking in Flutter. |
 
 ## Contributing

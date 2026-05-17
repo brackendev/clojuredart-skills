@@ -2,7 +2,7 @@ interface:
   display_name: "ClojureDart Upgrade"
   short_description: "Upgrade ClojureDart and the tensegritics/clojuredart dependency."
   default_prompt: "Run /cljd-upgrade."
-  brand_color: "#5881D8"
+  brand_color: "#02569B"
 
 policy:
   allow_implicit_invocation: false

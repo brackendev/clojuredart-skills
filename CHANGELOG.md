@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## 0.1.1
+
+### Changed
+
+- The `clojuredart` skill now layers on top of the host-neutral [clojure](https://github.com/brackendev/clojure-skills) baseline. It opens with an applicability block naming the override boundary (Dart interop, types, `cljd.flutter` directives, async, Dart-flavored class creation, Flutter project layout) and removes the redundant Common Patterns subsections (`Conditionals`, `Destructuring`, `Loop/Recur`, `Try/Catch`) that the baseline now covers. The remaining "Imperative Dart Object Setup" content stays as a standalone section. Added explicit positive guidance for the `defrecord` factory rule and a Gotcha noting that `with-redefs` is unavailable in ClojureDart.
+- The `clojuredart-lenses` skill is now a delta-only layer over [clojure-lenses](https://github.com/brackendev/clojure-skills) (in `clojure-skills`). Each of the six philosophy sections (Grug, APOSD, Tidy First, Parse Don't Validate, Honest Code, Legacy Code) keeps only the Flutter and ClojureDart-specific additions and removes the general Clojure restatements.
+- Brand color changed from Clojure logo blue (`#5881D8`) to Flutter blue (`#02569B`) across all eight skills in this package, so runtime UIs can distinguish ClojureDart guidance from the `clojure` baseline at a glance.
+
 ## 0.1.0
 
 ### Added
