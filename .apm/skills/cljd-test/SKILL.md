@@ -1,26 +1,32 @@
 ---
 name: cljd-test
-description: "Scaffold and run ClojureDart tests with cljd.test"
-argument-hint: "[unit|widget|all]"
+description: Run ClojureDart tests with cljd.test; offers to scaffold when none exist
+argument-hint: "[unit|widget|all|<path>]"
 user-invocable: true
 disable-model-invocation: true
 ---
 
 # ClojureDart Test
 
-Run and scaffold tests for ClojureDart projects using `cljd.test`.
+Run tests for ClojureDart projects using `cljd.test`. When no test files exist, the skill offers to scaffold them. See `CONVENTIONS.md` in the repo root for the argument grammar this skill follows.
 
-## Determine Scope
+## Arguments
 
-Parse `$ARGUMENTS`:
+| Input             | Target                                                                       |
+|-------------------|------------------------------------------------------------------------------|
+| (no argument)     | Run all tests (`clj -M:cljd test`)                                           |
+| `all`             | Same as (no argument); accepted for family consistency                       |
+| `<path>` `<glob>` | Restrict to those compiled Dart test files (for example, `test/my_app/core_test.dart`) |
+| `unit`            | Run unit-tagged tests only (`clj -M:cljd test -- --tags unit`)               |
+| `widget`          | Run widget-tagged tests only (`clj -M:cljd test -- --tags widget`)           |
 
-| Argument | Action | Command |
-|----------|--------|---------|
-| (empty) or `all` | Run all tests | `clj -M:cljd test` |
-| `unit` | Run unit tests only | `clj -M:cljd test -- --tags unit` |
-| `widget` | Run widget tests only | `clj -M:cljd test -- --tags widget` |
+The tag keywords assume tests use `:tags` metadata (see Test Tags below). If the project does not use tags, `unit` runs all tests excluding widget test files, and `widget` runs only test files that require `flutter_test`.
 
-This assumes tests use `:tags` metadata (see Test Tags below). If the project does not use tags, `unit` runs all tests excluding widget test files, and `widget` runs only test files that require `flutter_test`.
+This skill omits `--report` because preview is meaningless for a test run; the operator can inspect the test files and tags before invoking.
+
+## Mutation
+
+Running tests does not write source. The test runner compiles `.cljd` test files to `.dart` under the standard Flutter test output paths; that is a build-artifact write, not source mutation. When no test files exist, the skill offers to scaffold them (see Scaffold Tests below) and writes source files only after operator confirmation.
 
 ## Run Tests
 

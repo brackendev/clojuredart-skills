@@ -41,9 +41,11 @@ Update later with `apm update [-g]`. Remove with `apm uninstall brackendev/cloju
 
 - [Flutter SDK](https://docs.flutter.dev/get-started/install) and [ClojureDart](https://github.com/Tensegritics/ClojureDart) for any skill in this package.
 - [clojure-skills](https://github.com/brackendev/clojure-skills) installed alongside, for the host-neutral baseline.
-- The `cljd-check` dry step requires a [dry4clj](https://github.com/unclebob/dry4clj) `:dry4clj` alias in `deps.edn`.
+- The `cljd-tidy` dry step requires a [dry4clj](https://github.com/unclebob/dry4clj) `:dry4clj` alias in `deps.edn`.
 
 ## Skills
+
+User-invocable skills share an argument grammar, scope vocabulary, and mutation default. See [CONVENTIONS.md](CONVENTIONS.md) for the full standard. In short: skills accept natural-language keywords and bare paths; the single sanctioned flag is `--report`; mutating skills apply changes by default.
 
 ### Scaffolding and quality
 
@@ -55,35 +57,37 @@ Scaffold a new ClojureDart Flutter project, including clj-kondo lint setup.
 /cljd-new my-app
 ```
 
-#### `/cljd-check [lint|format|compile|dry]`
+#### `/cljd-tidy [lint|format|compile|dry] [--report] [all]`
 
-Run the ClojureDart quality pipeline. Defaults to lint, format, compile, dry. The dry step scans `.clj`, `.cljc`, and `.cljs` files; `.cljd` coverage requires the upstream dry4clj extension (see TODO).
+Tidy a ClojureDart project. Defaults to running all four steps; the `format` step rewrites `.cljd` files in place via `cljfmt fix`. Pass `--report` to swap the format step for `cljfmt check`, which previews diffs without writing. The dry step scans `.clj`, `.cljc`, and `.cljs` files; `.cljd` coverage requires the upstream dry4clj extension (see TODO).
 
 ```bash
-/cljd-check
-/cljd-check compile
+/cljd-tidy
+/cljd-tidy compile
+/cljd-tidy format --report
 ```
 
-#### `/cljd-test [unit|widget|all]`
+#### `/cljd-test [unit|widget|all|<path>]`
 
-Scaffold and run ClojureDart tests with `cljd.test`.
+Run ClojureDart tests with `cljd.test`. When no test files exist, the skill offers to scaffold them.
 
 ```bash
 /cljd-test
 /cljd-test widget
 ```
 
-#### `/cljd-upgrade`
+#### `/cljd-upgrade [--report] [all]`
 
-Upgrade ClojureDart to the latest version. Updates the `tensegritics/clojuredart` dependency SHA in `deps.edn`.
+Upgrade ClojureDart to the latest version. Rewrites the `tensegritics/clojuredart` `:sha` in `deps.edn` and verifies with a compile. Pass `--report` to print the current and remote SHAs without writing.
 
 ```bash
 /cljd-upgrade
+/cljd-upgrade --report
 ```
 
-#### `/cljd-smells-review [scope or options...]` (placeholder)
+#### `/cljd-smells-review [path|all]` (placeholder)
 
-Reserves the command name for a future ClojureDart-specific smells review. Currently prints a "not yet implemented" notice and exits. See [TODO.md](TODO.md).
+Reserves the command name for a future ClojureDart-specific smells review. Pure-report: when implemented, it will never write source files. Currently prints a "not yet implemented" notice and exits. See [TODO.md](TODO.md).
 
 ### Auto-triggered
 

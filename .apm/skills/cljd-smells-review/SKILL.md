@@ -1,7 +1,7 @@
 ---
 name: cljd-smells-review
-description: Review ClojureDart code against ClojureDart-specific smells (placeholder, see TODO)
-argument-hint: "[scope or options...]"
+description: Review ClojureDart code against ClojureDart-specific smells; pure report, never writes (placeholder, see TODO)
+argument-hint: "[path|all]"
 allowed-tools: Bash, Read, Grep, Glob
 user-invocable: true
 disable-model-invocation: true
@@ -9,7 +9,29 @@ disable-model-invocation: true
 
 # ClojureDart Smells Review (Placeholder)
 
-This skill is a placeholder. ClojureDart code review against a curated smells catalog is planned but not yet implemented. Running `/cljd-smells-review` today will show this notice and exit.
+This skill is a placeholder. ClojureDart code review against a curated smells catalog is planned but not yet implemented. Running `/cljd-smells-review` today will show this notice and exit. The argument grammar and pure-report classification land now so the eventual implementation has a contract to honor. See `CONVENTIONS.md` in the repo root for the standard.
+
+## Arguments
+
+| Input              | Target                                                                       |
+|--------------------|------------------------------------------------------------------------------|
+| (no argument)      | Review changed files only (staged + unstaged)                                |
+| `all`              | Review the full codebase, sampling high-risk and high-traffic namespaces     |
+| `path/to/dir`      | Review files under directory                                                 |
+| `path/to/file.cljd`| Review specific file                                                         |
+
+Examples:
+
+```
+/cljd-smells-review
+/cljd-smells-review src/my_app
+/cljd-smells-review src/my_app/core.cljd
+/cljd-smells-review all
+```
+
+This skill is pure-report: it never writes. Operators apply suggestions themselves. No `--report` flag, because there is nothing to invert.
+
+When (no argument) is invoked outside a git worktree, the eventual implementation will ask the operator what to review rather than widening silently to `all`.
 
 ## Status
 
@@ -19,7 +41,7 @@ This skill is a placeholder. ClojureDart code review against a curated smells ca
 
 When implemented, this review will cover:
 
-- **Dynamic warnings**: `DYNAMIC WARNING: can't resolve member` and inference-failure warnings that escape `cljd-check`.
+- **Dynamic warnings**: `DYNAMIC WARNING: can't resolve member` and inference-failure warnings that escape `cljd-tidy`.
 - **Dart interop**: positional vs named-argument confusion, missing type hints causing silent boxing, Python-style method names (`.__setitem`) that look right but resolve to nothing.
 - **Flutter directives**: misuse of `:watch` / `:managed` / `:bind` / `:get` / `:bg-watcher`; choosing the wrong directive for the data lifecycle.
 - **Widget rebuild behavior**: unnecessary rebuilds, missed rebuilds, scope leaks across widget boundaries.
@@ -39,7 +61,7 @@ When invoked, print this notice and exit:
 cljd-smells-review is not yet implemented.
 
 A ClojureDart-specific smells catalog is in development. For now, use:
-  - cljd-check for lint, format, and compile checks
+  - cljd-tidy for lint, format, and compile checks
   - cljd-test for the test suite
   - clojuredart skill (auto-invoked) for idiomatic guidance
 

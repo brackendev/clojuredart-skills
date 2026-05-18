@@ -1,8 +1,0 @@
-interface:
-  display_name: "ClojureDart Check"
-  short_description: "Run the ClojureDart quality pipeline: lint, format, compile, dry."
-  default_prompt: "Run /cljd-check."
-  brand_color: "#02569B"
-
-policy:
-  allow_implicit_invocation: false

@@ -8,7 +8,20 @@ disable-model-invocation: true
 
 # Scaffold a ClojureDart Flutter Project
 
-Create a new Flutter project with ClojureDart configured and ready to compile.
+Create a new Flutter project with ClojureDart configured and ready to compile. See `CONVENTIONS.md` in the repo root for the argument grammar this skill follows.
+
+## Arguments
+
+| Input             | Target                                                                       |
+|-------------------|------------------------------------------------------------------------------|
+| `<project-name>`  | Required. Use a valid Dart/Flutter package name: lowercase, underscores allowed, no hyphens (for example, `my_app`). The skill maps the package name to a Clojure namespace by replacing underscores with hyphens (`my-app.main`). |
+| (no argument)     | Prompt the operator for a project name.                                      |
+
+This skill is exempt from the `all` and `<path>` rows of the standard scope vocabulary because scaffolding has no useful default scope. See `CONVENTIONS.md` for the standard.
+
+## Mutation
+
+Mutates by default: creates the project directory and writes `deps.edn`, the entry-point source file `src/<project_name>/main.cljd`, `.cljfmt.edn`, `.clj-kondo/config.edn`, `.clj-kondo/hooks/cljd_test.clj`, the upstream `.clj-kondo/imports/tensegritics/clojuredart/` exports, and the standard Flutter project tree produced by `clj -M:cljd init` (`pubspec.yaml`, `lib/`, `android/`, `ios/`, and so on). Also updates `analysis_options.yaml` and appends ClojureDart entries to `.gitignore`. No `--report` flag; preview the side effects by reading this `SKILL.md`.
 
 ## Prerequisites
 

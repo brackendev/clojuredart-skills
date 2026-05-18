@@ -2,7 +2,19 @@
 
 ## [Unreleased]
 
-## 0.1.3
+## 0.1.4
+
+### Added
+
+- A repo-root `CONVENTIONS.md` that defines the argument grammar, scope vocabulary, and mutation defaults every user-invocable skill in this package follows. Three rules cover argument grammar (one sanctioned flag, `--report`), scope vocabulary (`(no argument)`, `all`, `<path>`), and mutation-as-default. The document lists `/cljd-new` as the standard's positional-required exemption and includes an author checklist that runs against every migrated skill.
+
+### Changed
+
+- The `cljd-check` skill is renamed to `cljd-tidy`. The verb now matches the default behavior: `cljfmt fix` runs by default and rewrites files in the `format` step. Operators with a saved `/cljd-check` invocation should replace it with `/cljd-tidy`. The new `--report` flag swaps the format step for `cljfmt check`, which previews diffs without writing; `lint`, `compile`, and `dry` are pure-read of source regardless.
+- The `cljd-new` skill gains a `## Arguments` section that documents its positional `<project-name>` exemption and a `## Mutation` section that lists the files it writes.
+- The `cljd-test` skill replaces its `## Determine Scope` section with `## Arguments` and adds a `## Mutation` section. The argument table now exposes the `all` and `<path>` rows alongside the existing `unit` and `widget` step keywords. No `--report` flag, because preview is meaningless for a test run and scaffolding only writes after operator confirmation.
+- The `cljd-upgrade` skill gains a `## Arguments` section, a `## Mutation` section, and a `--report` flag. With `--report`, the skill prints the current `:sha` and the remote `HEAD` from `git ls-remote` without writing `deps.edn` or running the compile.
+- The `cljd-smells-review` placeholder gains a canonical `## Arguments` section using the core scope vocabulary (`(no argument)`, `all`, `<path>`) and an explicit pure-report classification ahead of the eventual implementation.
 
 ### Changed
 
