@@ -2,14 +2,14 @@
   "$schema": "https://opencode.ai/config.json",
   "permission": {
     "skill": {
-      "cljd-nav": "allow",
+      "cljd-fix": "allow",
       "cljd-new": "allow",
       "cljd-smells-review": "allow",
       "cljd-test": "allow",
-      "cljd-tidy": "allow",
       "cljd-upgrade": "allow",
       "clojuredart": "allow",
-      "clojuredart-lenses": "allow"
+      "clojuredart-lenses": "allow",
+      "clojuredart-nav": "allow"
     }
   }
 }

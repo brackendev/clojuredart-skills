@@ -41,7 +41,7 @@ When (no argument) is invoked outside a git worktree, the eventual implementatio
 
 When implemented, this review will cover:
 
-- **Dynamic warnings**: `DYNAMIC WARNING: can't resolve member` and inference-failure warnings that escape `cljd-tidy`.
+- **Dynamic warnings**: `DYNAMIC WARNING: can't resolve member` and inference-failure warnings that escape `cljd-fix`.
 - **Dart interop**: positional vs named-argument confusion, missing type hints causing silent boxing, Python-style method names (`.__setitem`) that look right but resolve to nothing.
 - **Flutter directives**: misuse of `:watch` / `:managed` / `:bind` / `:get` / `:bg-watcher`; choosing the wrong directive for the data lifecycle.
 - **Widget rebuild behavior**: unnecessary rebuilds, missed rebuilds, scope leaks across widget boundaries.
@@ -61,7 +61,7 @@ When invoked, print this notice and exit:
 cljd-smells-review is not yet implemented.
 
 A ClojureDart-specific smells catalog is in development. For now, use:
-  - cljd-tidy for lint, format, and compile checks
+  - cljd-fix for lint, format, and compile checks
   - cljd-test for the test suite
   - clojuredart skill (auto-invoked) for idiomatic guidance
 

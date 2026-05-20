@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-05-20
+
+### Changed
+
+- The `cljd-tidy` skill is renamed to `cljd-fix` to adopt the noun-first canonical naming pattern (`<target>-<verb>`) shared across the agent-skills family. The verb suffix `-fix` consistently signals a mutating quality pipeline (lint, format, compile, dry). Operators with a saved `/cljd-tidy` invocation should replace it with `/cljd-fix`. The skill's behavior is unchanged; only the name moves.
+- The `cljd-nav` skill is renamed to `clojuredart-nav` so the prefix matches the other auto-triggered skills in this package (`clojuredart`, `clojuredart-lenses`). The skill remains model-invocable only; no slash command is exposed.
+
 ## 0.1.4
 
 ### Added

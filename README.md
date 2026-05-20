@@ -2,7 +2,7 @@
 
 ClojureDart development skills packaged as an [APM](https://github.com/microsoft/apm) plugin. One install deploys the full set to every runtime APM supports: Claude Code, Codex, OpenCode, Cursor, Copilot, Gemini, and Windsurf.
 
-Skills follow the [Agent Skills](https://agentskills.io) open standard. Three auto-trigger from conversation context (`clojuredart`, `clojuredart-lenses`, `cljd-nav`); the rest appear as slash commands.
+Skills follow the [Agent Skills](https://agentskills.io) open standard. Three auto-trigger from conversation context (`clojuredart`, `clojuredart-lenses`, `clojuredart-nav`); the rest appear as slash commands.
 
 This package layers on top of the host-neutral [clojure-skills](https://github.com/brackendev/clojure-skills) baseline. Install both together so the `clojure` skill handles general Clojure family style (naming, threading, collections, atoms, dispatch, formatting, namespaces, testing) and this package covers Dart interop, type hints and nullability, `cljd.flutter` directives, async, FFI, the ClojureDart socket REPL, and Flutter project layout.
 
@@ -41,7 +41,7 @@ Update later with `apm update [-g]`. Remove with `apm uninstall brackendev/cloju
 
 - [Flutter SDK](https://docs.flutter.dev/get-started/install) and [ClojureDart](https://github.com/Tensegritics/ClojureDart) for any skill in this package.
 - [clojure-skills](https://github.com/brackendev/clojure-skills) installed alongside, for the host-neutral baseline.
-- The `cljd-tidy` dry step requires a [dry4clj](https://github.com/unclebob/dry4clj) `:dry4clj` alias in `deps.edn`.
+- The `cljd-fix` dry step requires a [dry4clj](https://github.com/unclebob/dry4clj) `:dry4clj` alias in `deps.edn`.
 
 ## Skills
 
@@ -57,14 +57,14 @@ Scaffold a new ClojureDart Flutter project, including clj-kondo lint setup.
 /cljd-new my-app
 ```
 
-#### `/cljd-tidy [lint|format|compile|dry] [--report] [all]`
+#### `/cljd-fix [lint|format|compile|dry] [--report] [all]`
 
-Tidy a ClojureDart project. Defaults to running all four steps; the `format` step rewrites `.cljd` files in place via `cljfmt fix`. Pass `--report` to swap the format step for `cljfmt check`, which previews diffs without writing. The dry step scans `.clj`, `.cljc`, and `.cljs` files; `.cljd` coverage requires the upstream dry4clj extension (see TODO).
+Fix a ClojureDart project. Defaults to running all four steps; the `format` step rewrites `.cljd` files in place via `cljfmt fix`. Pass `--report` to swap the format step for `cljfmt check`, which previews diffs without writing. The dry step scans `.clj`, `.cljc`, and `.cljs` files; `.cljd` coverage requires the upstream dry4clj extension (see TODO).
 
 ```bash
-/cljd-tidy
-/cljd-tidy compile
-/cljd-tidy format --report
+/cljd-fix
+/cljd-fix compile
+/cljd-fix format --report
 ```
 
 #### `/cljd-test [unit|widget|all|<path>]`
@@ -97,7 +97,7 @@ These skills activate from conversation context. They cannot be invoked directly
 |-------|----------|
 | **clojuredart** | `.cljd` files, `deps.edn` with `tensegritics/clojuredart`, `cljd-out/` directories, Flutter integration, ClojureDart REPL usage. Covers syntax, Dart interop, widget macros, project structure, compilation, REPL-driven development, the defrecord factory rule, and the absence of `with-redefs`. Defers to the [clojure](https://github.com/brackendev/clojure-skills) baseline for general style. |
 | **clojuredart-lenses** | Auto-triggers alongside the [code-lenses](https://github.com/brackendev/code-lenses) plugin in ClojureDart work. Layers on top of `clojure-lenses` and records only the Flutter-specific deltas. Covers the four default code-lenses philosophies (grug, Honest Code, Tidy First, Parse Don't Validate) and the two opt-in philosophies (APOSD, Legacy Code) that activate when their lens is added with `+aposd` or `+legacy-code` or invoked directly. |
-| **cljd-nav** | ClojureDart navigation discussions: named routes, `go_router`, the `Navigator` API, tab navigation, and deep linking in Flutter. |
+| **clojuredart-nav** | ClojureDart navigation discussions: named routes, `go_router`, the `Navigator` API, tab navigation, and deep linking in Flutter. |
 
 ## Contributing
 

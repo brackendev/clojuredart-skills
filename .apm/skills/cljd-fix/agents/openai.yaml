@@ -1,0 +1,8 @@
+interface:
+  display_name: "ClojureDart Fix"
+  short_description: "Fix a ClojureDart project: lint, format (writes by default), compile, dry."
+  default_prompt: "Run /cljd-fix."
+  brand_color: "#02569B"
+
+policy:
+  allow_implicit_invocation: false

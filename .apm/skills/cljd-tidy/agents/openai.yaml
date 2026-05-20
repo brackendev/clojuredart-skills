@@ -1,8 +1,0 @@
-interface:
-  display_name: "ClojureDart Tidy"
-  short_description: "Tidy a ClojureDart project: lint, format (writes by default), compile, dry."
-  default_prompt: "Run /cljd-tidy."
-  brand_color: "#02569B"
-
-policy:
-  allow_implicit_invocation: false

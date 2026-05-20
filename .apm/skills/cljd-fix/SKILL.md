@@ -1,12 +1,12 @@
 ---
-name: cljd-tidy
-description: Tidy a ClojureDart project (lint, format, compile, dry); format writes by default
+name: cljd-fix
+description: Fix a ClojureDart project (lint, format, compile, dry); format writes by default
 argument-hint: "[lint|format|compile|dry] [--report] [all]"
 user-invocable: true
 disable-model-invocation: true
 ---
 
-# ClojureDart Tidy
+# ClojureDart Fix
 
 Run lint, format, compile, and duplicate-form checks on a ClojureDart project. The `format` step writes by default; `lint`, `compile`, and `dry` are pure-read of source. See `CONVENTIONS.md` in the repo root for the argument grammar this skill follows.
 
@@ -22,7 +22,7 @@ Run lint, format, compile, and duplicate-form checks on a ClojureDart project. T
 | `dry`             | Run dry only                                                                 |
 | `--report`        | Replace `cljfmt fix` with non-writing `cljfmt check` in the format step      |
 
-Step keywords are combinable (for example, `/cljd-tidy lint compile dry`). The `--report` flag may appear in any position. When `--report` is present without an explicit step keyword, every step still runs; only the format step's behavior changes.
+Step keywords are combinable (for example, `/cljd-fix lint compile dry`). The `--report` flag may appear in any position. When `--report` is present without an explicit step keyword, every step still runs; only the format step's behavior changes.
 
 The step keyword `dry` is the dry4clj duplicate-form scan, not a dry-run mode. Only the literal `--report` token disables writes.
 
@@ -101,7 +101,7 @@ Upstream dry4clj scans `.clj`, `.cljc`, and `.cljs` files only, so a stock build
 After running all requested steps, print a summary:
 
 ```
-ClojureDart Tidy Results:
+ClojureDart Fix Results:
   Lint:    PASS/FAIL/SKIPPED
   Format:  PASS/FAIL/SKIPPED
   Compile: PASS/FAIL/SKIPPED

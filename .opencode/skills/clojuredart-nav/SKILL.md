@@ -1,5 +1,5 @@
 ---
-name: cljd-nav
+name: clojuredart-nav
 description: >-
   ClojureDart navigation patterns: named routes, go_router, Navigator API,
   tab navigation, and deep linking in Flutter.

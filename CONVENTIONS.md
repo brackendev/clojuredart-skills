@@ -2,7 +2,7 @@
 
 This document defines the argument grammar, scope vocabulary, and mutation defaults that every user-invocable skill in `clojuredart-skills` follows. A reader who learns one skill should be able to predict every other skill. New skills follow this document.
 
-These conventions apply to user-invocable skills (`user-invocable: true` in frontmatter). Model-invocable reference skills with no argument surface (currently `clojuredart`, `clojuredart-lenses`, and `cljd-nav`) carry no argument grammar and are exempt from rules 1 and 2.
+These conventions apply to user-invocable skills (`user-invocable: true` in frontmatter). Model-invocable reference skills with no argument surface (currently `clojuredart`, `clojuredart-lenses`, and `clojuredart-nav`) carry no argument grammar and are exempt from rules 1 and 2.
 
 ## The three rules
 
@@ -12,7 +12,7 @@ User-invocable skills accept natural-language keywords and bare paths. The singl
 
 Skill-specific modifiers are bare phrases, not flags. Examples used in this plugin:
 
-- `lint`, `format`, `compile`, `dry`: step keywords for `/cljd-tidy`
+- `lint`, `format`, `compile`, `dry`: step keywords for `/cljd-fix`
 - `unit`, `widget`, `all`: scope keywords for `/cljd-test`
 - `all`, `<path>`, `<glob>`: shared scope keywords listed in rule 2
 
@@ -42,7 +42,7 @@ Skills that can mutate the workspace apply changes when invoked. The operator pa
 
 Only the literal token `--report` enables report-only mode. Natural-language phrases ("preview", "dry run", "rehearse") are scope input or step keywords, not mode triggers. A skill that conflates them is wrong.
 
-Command verbs reinforce the default. Skills named `/cljd-tidy`, `/cljd-new`, `/cljd-test`, `/cljd-upgrade` (verbs that imply action) mutate by default. Skills named `/cljd-smells-review` (`review` is a reading verb) are pure-report.
+Command suffixes reinforce the default. The family follows a noun-first `<target>-<verb>` pattern, so the trailing verb signals behavior. Skills with suffix `-fix`, `-new`, `-test`, `-upgrade` (verbs that imply action) mutate by default; in this package, `/cljd-fix`, `/cljd-new`, `/cljd-test`, and `/cljd-upgrade`. Skills with suffix `-review` (a reading verb) are pure-report; in this package, `/cljd-smells-review`.
 
 ## Classification
 
@@ -58,13 +58,13 @@ A skill is classified by its actual behavior, not by its name. If the name and b
 
 | Skill                  | Class           | `--report` available? | Notes |
 |------------------------|-----------------|------------------------|-------|
-| `/cljd-tidy`           | Mutating        | Yes                    | `format` step runs `cljfmt fix` by default. `--report` swaps it for `cljfmt check`. `lint`, `compile`, and `dry` are pure-read regardless. |
+| `/cljd-fix`           | Mutating        | Yes                    | `format` step runs `cljfmt fix` by default. `--report` swaps it for `cljfmt check`. `lint`, `compile`, and `dry` are pure-read regardless. |
 | `/cljd-new`            | Mutating        | No                     | Scaffolds the project tree. Preview the side effects by reading `SKILL.md`. |
 | `/cljd-test`           | Mutating        | No                     | Runs the test suite and offers to scaffold tests when none exist. Test runs rewrite generated Dart in `lib/cljd-out/` (build artifacts, not source); scaffolding writes source files only after operator confirmation. |
 | `/cljd-upgrade`        | Mutating        | Yes                    | Rewrites the `tensegritics/clojuredart` `:sha` in `deps.edn`. `--report` prints the previous and remote SHA without writing. |
 | `/cljd-smells-review`  | Pure report     | No flag (no inverse)   | Placeholder until the ClojureDart smells catalog ships. The eventual review never writes source files. |
 
-Model-invocable skills (`clojuredart`, `clojuredart-lenses`, `cljd-nav`) have no argument surface and are not classified here.
+Model-invocable skills (`clojuredart`, `clojuredart-lenses`, `clojuredart-nav`) have no argument surface and are not classified here.
 
 ## Section structure
 
@@ -78,16 +78,16 @@ The section name `## Customization` is retired.
 
 ## Worked examples
 
-### `/cljd-tidy` -- mutating skill with `--report`
+### `/cljd-fix` -- mutating skill with `--report`
 
 ```
-/cljd-tidy                    # all four steps; format writes
-/cljd-tidy lint               # lint only (pure-read; no writes anywhere)
-/cljd-tidy format             # format step; writes via cljfmt fix
-/cljd-tidy compile dry        # combined step keywords
-/cljd-tidy --report           # all four steps; format reads via cljfmt check
-/cljd-tidy format --report    # format step; no writes
-/cljd-tidy all                # synonym for (no argument)
+/cljd-fix                    # all four steps; format writes
+/cljd-fix lint               # lint only (pure-read; no writes anywhere)
+/cljd-fix format             # format step; writes via cljfmt fix
+/cljd-fix compile dry        # combined step keywords
+/cljd-fix --report           # all four steps; format reads via cljfmt check
+/cljd-fix format --report    # format step; no writes
+/cljd-fix all                # synonym for (no argument)
 ```
 
 The skill writes when the `format` step runs without `--report`. With `--report`, the format step runs `cljfmt check`, which reports diffs without writing. The other three steps (`lint`, `compile`, `dry`) are pure-read of source regardless. The `compile` step writes generated Dart under `lib/cljd-out/`; that is a build artifact, not a source mutation, and is unaffected by `--report`. The `## Mutation` section in the skill body documents this asymmetry.
@@ -140,13 +140,13 @@ No `--report` flag, because the skill never writes. Operators apply suggestions 
 
 ## Ambiguity notes
 
-**`(no argument)` outside a git worktree.** A skill whose narrowest useful default depends on git state (for example, "review changed files") must define the fallback when no git worktree is present. The expected fallback is to ask the operator what to review rather than to widen silently to `all`. In this plugin, `/cljd-smells-review` will document this fallback when its body lands; `/cljd-tidy`, `/cljd-test`, and `/cljd-upgrade` derive scope from `deps.edn` and the project tree rather than from a diff, so the question does not apply.
+**`(no argument)` outside a git worktree.** A skill whose narrowest useful default depends on git state (for example, "review changed files") must define the fallback when no git worktree is present. The expected fallback is to ask the operator what to review rather than to widen silently to `all`. In this plugin, `/cljd-smells-review` will document this fallback when its body lands; `/cljd-fix`, `/cljd-test`, and `/cljd-upgrade` derive scope from `deps.edn` and the project tree rather than from a diff, so the question does not apply.
 
 **`commit` versus staged-and-unstaged state.** When a future skill accepts `commit` as a scope keyword, it must state whether `commit` means the most recent commit, the staged tree, or the staged-plus-unstaged working tree. The expected default is the most recent commit. None of the current skills carry this scope.
 
-**`--report` versus natural-language synonyms.** "Preview", "dry run", "rehearse", and similar phrases are scope input or step keywords (or operator chatter), never mode triggers. Only the literal `--report` token disables writes. The `/cljd-tidy` step keyword `dry` is the dry4clj duplicate-form scan, not a dry-run mode; the conflict is named here so operators do not read `dry` as "dry run".
+**`--report` versus natural-language synonyms.** "Preview", "dry run", "rehearse", and similar phrases are scope input or step keywords (or operator chatter), never mode triggers. Only the literal `--report` token disables writes. The `/cljd-fix` step keyword `dry` is the dry4clj duplicate-form scan, not a dry-run mode; the conflict is named here so operators do not read `dry` as "dry run".
 
-**Step keywords versus scope keywords.** A skill like `/cljd-tidy` accepts step keywords (`lint`, `format`, `compile`, `dry`) that select work to run, and scope keywords (`all`) that widen scope. Step keywords are skill-specific and listed in the skill's own table. Scope keywords are shared and listed here. When a skill has both, the `## Arguments` table lists both with clearly distinct rows.
+**Step keywords versus scope keywords.** A skill like `/cljd-fix` accepts step keywords (`lint`, `format`, `compile`, `dry`) that select work to run, and scope keywords (`all`) that widen scope. Step keywords are skill-specific and listed in the skill's own table. Scope keywords are shared and listed here. When a skill has both, the `## Arguments` table lists both with clearly distinct rows.
 
 **Tool-level flags the skill calls internally.** A skill may invoke a tool that itself uses POSIX flags (for example, `clj-kondo --lint`, `cljfmt fix`, `cljfmt check`, `git ls-remote`, `flutter pub add --dev`). Those are tool-level flags, not skill flags, and do not count against rule 1. The skill body should disambiguate when a tool flag could be mistaken for a skill flag.
 
@@ -156,9 +156,9 @@ When adding or modifying a user-invocable skill, confirm each item before commit
 
 - [ ] Skill has a `## Arguments` section (or is listed under [Exemptions](#exemptions)).
 - [ ] Scope rows match the canonical table; opt-in rows appear only where the skill genuinely supports them.
-- [ ] If the skill mutates, the command verb signals it (`/cljd-tidy`, `/cljd-new`, `/cljd-test`, `/cljd-upgrade`).
+- [ ] If the skill mutates, the command suffix signals it (`-fix`, `-new`, `-upgrade`, `-deploy`, `-test`, `-sync`, `-prune`, `-rebuild`, `-create`, `-apply`).
 - [ ] If the skill mutates and preview is useful, `--report` is documented.
-- [ ] If the skill is pure-report, the verb signals it (`/cljd-smells-review`) and the skill has no `--report` flag.
+- [ ] If the skill is pure-report, the suffix signals it (`-review`, `-audit`, `-check`) and the skill has no `--report` flag.
 - [ ] No `## Customization` section.
 - [ ] No `--name` flags other than `--report`. Tool-level flags the skill calls internally (for example, `cljfmt check`, `clj-kondo --lint`) are not skill flags and do not count.
 - [ ] Frontmatter `name` matches the skill's directory name.
