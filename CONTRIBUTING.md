@@ -12,6 +12,7 @@ For people working on the plugin source. End-user install instructions live in [
 | `opencode.jsonc`, `.opencode/package.json` | Local OpenCode configuration. |
 | `README.md` | End-user documentation. |
 | `CHANGELOG.md` | User-facing changes per version. |
+| `CONVENTIONS.md` | Canonical argument grammar, scope vocabulary, and mutation defaults for every user-invocable skill. |
 | `CLAUDE.md`, `TODO.md` | Local working notes. Gitignored globally; never committed. |
 
 ## APM lockfile rule
@@ -52,6 +53,8 @@ Runtime install (requires `apm` and the runtime CLIs you want to verify: `claude
 - Confirm OpenCode deployment with `opencode --pure debug skill`, which lists deployed skills and their source paths.
 
 ## Skill conventions
+
+For the argument grammar, scope vocabulary, and mutation defaults that every user-invocable skill follows, see [CONVENTIONS.md](CONVENTIONS.md).
 
 | Setting | When to use |
 |---------|-------------|
