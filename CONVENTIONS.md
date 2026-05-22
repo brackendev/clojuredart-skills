@@ -42,7 +42,7 @@ Skills that can mutate the workspace apply changes when invoked. The operator pa
 
 Only the literal token `--report` enables report-only mode. Natural-language phrases ("preview", "dry run", "rehearse") are scope input or step keywords, not mode triggers. A skill that conflates them is wrong.
 
-Command suffixes reinforce the default. The family follows a noun-first `<target>-<verb>` pattern, so the trailing verb signals behavior. Skills with suffix `-fix`, `-new`, `-test`, `-upgrade` (verbs that imply action) mutate by default; in this package, `/cljd-fix`, `/cljd-new`, `/cljd-test`, and `/cljd-upgrade`. Skills with suffix `-review` (a reading verb) are pure-report; in this package, `/cljd-smells-review`.
+Command suffixes reinforce the default. The family follows a noun-first `<target>-<verb>` pattern, so the trailing verb signals behavior. Skills with suffix `-fix`, `-new`, `-test`, `-upgrade` (verbs that imply action) mutate by default; in this package, `/cljd-fix`, `/cljd-new`, `/cljd-test`, `/cljd-upgrade`, and the forthcoming `/cljd-smells-fix`. Skills with suffix `-review` (a reading verb) are pure-report; this package currently has none.
 
 ## Classification
 
@@ -62,7 +62,7 @@ A skill is classified by its actual behavior, not by its name. If the name and b
 | `/cljd-new`            | Mutating        | No                     | Scaffolds the project tree. Preview the side effects by reading `SKILL.md`. |
 | `/cljd-test`           | Mutating        | No                     | Runs the test suite and offers to scaffold tests when none exist. Test runs rewrite generated Dart in `lib/cljd-out/` (build artifacts, not source); scaffolding writes source files only after operator confirmation. |
 | `/cljd-upgrade`        | Mutating        | Yes                    | Rewrites the `tensegritics/clojuredart` `:sha` in `deps.edn`. `--report` prints the previous and remote SHA without writing. |
-| `/cljd-smells-review`  | Pure report     | No flag (no inverse)   | Placeholder until the ClojureDart smells catalog ships. The eventual review never writes source files. |
+| `/cljd-smells-fix`     | Mutating        | Yes                    | Placeholder until the ClojureDart smells catalog ships. When implemented, mirrors the mutation contract of `/clj-smells-fix`: Stage 1 mechanical and Stage 2 DEFECT-band findings auto-applied; `--report` disables all writes. |
 
 Model-invocable skills (`clojuredart`, `clojuredart-lenses`, `clojuredart-nav`) have no argument surface and are not classified here.
 
@@ -123,16 +123,17 @@ The default rewrites `:sha` in `deps.edn` and verifies with a compile. With `--r
 
 The default runs the suite. Compilation of `.cljd` to `.dart` test files is a build-artifact write, not source mutation. The "offer to scaffold when no tests exist" path writes source files only after operator confirmation, which is captured in the `## Mutation` section.
 
-### `/cljd-smells-review` -- pure-report skill
+### `/cljd-smells-fix` -- mutating skill with `--report` (placeholder)
 
 ```
-/cljd-smells-review                      # review changed files
-/cljd-smells-review src/my_app           # review files under directory
-/cljd-smells-review src/my_app/core.cljd # review specific file
-/cljd-smells-review all                  # review the full codebase
+/cljd-smells-fix                         # fix changed files
+/cljd-smells-fix src/my_app              # fix files under directory
+/cljd-smells-fix src/my_app/core.cljd    # fix specific file
+/cljd-smells-fix all                     # fix the full codebase
+/cljd-smells-fix --report                # produce the report only; no writes
 ```
 
-No `--report` flag, because the skill never writes. Operators apply suggestions themselves. The body remains a placeholder until the ClojureDart smells catalog ships; the argument grammar and pure-report classification land now so the eventual implementation has a contract to honor.
+The body remains a placeholder until the ClojureDart smells catalog ships. When implemented, the skill will mirror the mutation contract of `/clj-smells-fix`: Stage 1 mechanical findings and Stage 2 `DEFECT`-tier findings within a defined safety band are auto-applied; `SMELL` and `HINT` findings remain report-only; `--report` disables all writes.
 
 ## Exemptions
 
@@ -140,7 +141,7 @@ No `--report` flag, because the skill never writes. Operators apply suggestions 
 
 ## Ambiguity notes
 
-**`(no argument)` outside a git worktree.** A skill whose narrowest useful default depends on git state (for example, "review changed files") must define the fallback when no git worktree is present. The expected fallback is to ask the operator what to review rather than to widen silently to `all`. In this plugin, `/cljd-smells-review` will document this fallback when its body lands; `/cljd-fix`, `/cljd-test`, and `/cljd-upgrade` derive scope from `deps.edn` and the project tree rather than from a diff, so the question does not apply.
+**`(no argument)` outside a git worktree.** A skill whose narrowest useful default depends on git state (for example, "review changed files") must define the fallback when no git worktree is present. The expected fallback is to ask the operator what to review rather than to widen silently to `all`. In this plugin, `/cljd-smells-fix` will document this fallback when its body lands; `/cljd-fix`, `/cljd-test`, and `/cljd-upgrade` derive scope from `deps.edn` and the project tree rather than from a diff, so the question does not apply.
 
 **`commit` versus staged-and-unstaged state.** When a future skill accepts `commit` as a scope keyword, it must state whether `commit` means the most recent commit, the staged tree, or the staged-plus-unstaged working tree. The expected default is the most recent commit. None of the current skills carry this scope.
 

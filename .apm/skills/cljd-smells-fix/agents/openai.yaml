@@ -1,0 +1,8 @@
+interface:
+  display_name: "ClojureDart Smells Fix"
+  short_description: "Placeholder for a future ClojureDart-specific smells fix. When implemented, auto-applies mechanical and DEFECT findings. Pass --report to disable writes."
+  default_prompt: "Run /cljd-smells-fix."
+  brand_color: "#02569B"
+
+policy:
+  allow_implicit_invocation: false

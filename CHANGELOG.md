@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.1.7] - 2026-05-22
+
+### Changed
+
+- The `cljd-smells-review` placeholder is renamed to `cljd-smells-fix` to match the mutating contract adopted by the new `clj-smells-fix` skill in [clojure-skills](https://github.com/brackendev/clojure-skills). The placeholder still prints a "not yet implemented" notice; the rename, argument grammar (`[path|all] [--report]`), and frontmatter all reflect the eventual fix-by-default behavior. Operators with a saved `/cljd-smells-review` invocation should replace it with `/cljd-smells-fix`.
+
 ## [0.1.6] - 2026-05-20
 
 ### Changed

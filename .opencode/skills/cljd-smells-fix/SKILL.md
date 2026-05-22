@@ -1,37 +1,39 @@
 ---
-name: cljd-smells-review
-description: Review ClojureDart code against ClojureDart-specific smells; pure report, never writes (placeholder, see TODO)
-argument-hint: "[path|all]"
-allowed-tools: Bash, Read, Grep, Glob
+name: cljd-smells-fix
+description: Fix ClojureDart code against ClojureDart-specific smells; placeholder, see TODO. When implemented, auto-applies mechanical and DEFECT-tier findings and reports the rest. Pass --report to disable writes.
+argument-hint: "[path|all] [--report]"
+allowed-tools: Bash, Read, Edit, Grep, Glob
 user-invocable: true
 disable-model-invocation: true
 ---
 
-# ClojureDart Smells Review (Placeholder)
+# ClojureDart Smells Fix (Placeholder)
 
-This skill is a placeholder. ClojureDart code review against a curated smells catalog is planned but not yet implemented. Running `/cljd-smells-review` today will show this notice and exit. The argument grammar and pure-report classification land now so the eventual implementation has a contract to honor. See `CONVENTIONS.md` in the repo root for the standard.
+This skill is a placeholder. ClojureDart code review against a curated smells catalog is planned but not yet implemented. Running `/cljd-smells-fix` today will show this notice and exit. The argument grammar and mutation contract land now so the eventual implementation has a contract to honor. See `CONVENTIONS.md` in the repo root for the standard.
 
 ## Arguments
 
 | Input              | Target                                                                       |
 |--------------------|------------------------------------------------------------------------------|
-| (no argument)      | Review changed files only (staged + unstaged)                                |
-| `all`              | Review the full codebase, sampling high-risk and high-traffic namespaces     |
-| `path/to/dir`      | Review files under directory                                                 |
-| `path/to/file.cljd`| Review specific file                                                         |
+| (no argument)      | Fix changed files only (staged + unstaged)                                   |
+| `all`              | Fix the full codebase, sampling high-risk and high-traffic namespaces        |
+| `path/to/dir`      | Fix files under directory                                                    |
+| `path/to/file.cljd`| Fix specific file                                                            |
+| `--report`         | Disable all writes; produce the report only                                  |
 
 Examples:
 
 ```
-/cljd-smells-review
-/cljd-smells-review src/my_app
-/cljd-smells-review src/my_app/core.cljd
-/cljd-smells-review all
+/cljd-smells-fix
+/cljd-smells-fix src/my_app
+/cljd-smells-fix src/my_app/core.cljd
+/cljd-smells-fix all
+/cljd-smells-fix --report
 ```
 
-This skill is pure-report: it never writes. Operators apply suggestions themselves. No `--report` flag, because there is nothing to invert.
+When implemented, the skill mirrors the mutation contract of `/clj-smells-fix`: Stage 1 mechanical findings and Stage 2 `DEFECT`-tier findings within a defined safety band are auto-applied; `SMELL` and `HINT` findings remain report-only; `--report` disables all writes.
 
-When (no argument) is invoked outside a git worktree, the eventual implementation will ask the operator what to review rather than widening silently to `all`.
+When (no argument) is invoked outside a git worktree, the eventual implementation will ask the operator what to fix rather than widening silently to `all`.
 
 ## Status
 
@@ -58,14 +60,14 @@ See `TODO.md` in the repo root.
 When invoked, print this notice and exit:
 
 ```
-cljd-smells-review is not yet implemented.
+cljd-smells-fix is not yet implemented.
 
 A ClojureDart-specific smells catalog is in development. For now, use:
   - cljd-fix for lint, format, and compile checks
   - cljd-test for the test suite
   - clojuredart skill (auto-invoked) for idiomatic guidance
 
-To track progress, see TODO.md in the clojure-skills repo.
+To track progress, see TODO.md in the clojuredart-skills repo.
 ```
 
-Do not run any analysis. Do not invoke clj-kondo. Do not consult the JVM clj-smells catalog.
+Do not run any analysis. Do not invoke clj-kondo. Do not consult the JVM clj-smells catalog. Do not write to any source file.

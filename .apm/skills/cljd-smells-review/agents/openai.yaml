@@ -1,8 +1,0 @@
-interface:
-  display_name: "ClojureDart Smells Review"
-  short_description: "Placeholder for a future ClojureDart-specific smells review."
-  default_prompt: "Run /cljd-smells-review."
-  brand_color: "#02569B"
-
-policy:
-  allow_implicit_invocation: false

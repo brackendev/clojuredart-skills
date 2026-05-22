@@ -85,9 +85,9 @@ Upgrade ClojureDart to the latest version. Rewrites the `tensegritics/clojuredar
 /cljd-upgrade --report
 ```
 
-#### `/cljd-smells-review [path|all]` (placeholder)
+#### `/cljd-smells-fix [path|all] [--report]` (placeholder)
 
-Reserves the command name for a future ClojureDart-specific smells review. Pure-report: when implemented, it will never write source files. Currently prints a "not yet implemented" notice and exits. See [TODO.md](TODO.md).
+Reserves the command name for a future ClojureDart-specific smells fix pipeline. When implemented, will mirror the mutation contract of `/clj-smells-fix` in `clojure-skills`: auto-apply Stage 1 mechanical findings and the Stage 2 `DEFECT`-tier safety band; report `SMELL` and `HINT` findings; honor `--report` to disable all writes. Currently prints a "not yet implemented" notice and exits. See [TODO.md](TODO.md).
 
 ### Auto-triggered
 
