@@ -1,6 +1,6 @@
 ---
 name: cljd-test
-description: Run ClojureDart tests with cljd.test; offers to scaffold when none exist
+description: "Run ClojureDart tests with cljd.test; offers to scaffold when none exist"
 argument-hint: "[unit|widget|all|<path>]"
 user-invocable: true
 disable-model-invocation: true

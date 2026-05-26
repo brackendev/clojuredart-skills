@@ -1,6 +1,6 @@
 ---
 name: cljd-fix
-description: Fix a ClojureDart project (lint, format, compile, dry); format writes by default
+description: "Fix a ClojureDart project (lint, format, compile, dry); format writes by default"
 argument-hint: "[lint|format|compile|dry] [--report] [all]"
 user-invocable: true
 disable-model-invocation: true

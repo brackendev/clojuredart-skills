@@ -1,6 +1,6 @@
 ---
 name: cljd-upgrade
-description: Upgrade the tensegritics/clojuredart SHA in deps.edn and verify the project compiles
+description: "Upgrade the tensegritics/clojuredart SHA in deps.edn and verify the project compiles"
 argument-hint: "[--report] [all]"
 user-invocable: true
 disable-model-invocation: true

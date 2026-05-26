@@ -1,7 +1,7 @@
 ---
 name: cljd-new
-description: Scaffold a new ClojureDart Flutter project
-argument-hint: <project-name>
+description: "Scaffold a new ClojureDart Flutter project"
+argument-hint: "<project-name>"
 user-invocable: true
 disable-model-invocation: true
 ---

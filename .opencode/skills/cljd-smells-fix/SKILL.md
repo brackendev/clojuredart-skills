@@ -1,6 +1,6 @@
 ---
 name: cljd-smells-fix
-description: Fix ClojureDart code against ClojureDart-specific smells; placeholder, see TODO. When implemented, auto-applies mechanical and DEFECT-tier findings and reports the rest. Pass --report to disable writes.
+description: "Fix ClojureDart code against ClojureDart-specific smells; placeholder, see TODO. When implemented, auto-applies mechanical and DEFECT-tier findings and reports the rest. Pass --report to disable writes."
 argument-hint: "[path|all] [--report]"
 allowed-tools: Bash, Read, Edit, Grep, Glob
 user-invocable: true
