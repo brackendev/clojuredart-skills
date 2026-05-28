@@ -1,5 +1,5 @@
 name: clojuredart-skills
-version: 0.1.8
+version: 0.1.9
 description: ClojureDart toolkit covering Dart interop, type hints, `cljd.flutter` directives, async, FFI, Flutter project scaffolding, quality checks, navigation, testing, upgrades, and a smells-fix placeholder. Layers on top of clojure-skills.
 author: Bracken Spencer
 license: MIT

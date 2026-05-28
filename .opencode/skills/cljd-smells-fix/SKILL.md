@@ -35,6 +35,8 @@ When implemented, the skill mirrors the mutation contract of `/clj-smells-fix`: 
 
 When (no argument) is invoked outside a git worktree, the eventual implementation will ask the operator what to fix rather than widening silently to `all`.
 
+The eventual implementation will honor Rule 4 in CONVENTIONS.md: vendored, generated, and dependency-locked paths are excluded from broad scopes (`.gitignore` matches plus a hardcoded floor of `node_modules/`, `vendor/`, `third_party/`, `.bundle/`, `target/`, `build/`, `dist/`, `out/`, `.shadow-cljs/`, `cljd-out/`, and the standard lock files). Naming a vendored path directly through `<path>` or `<glob>` bypasses the filter for that target.
+
 ## Status
 
 **Not implemented.** A ClojureDart-specific smells catalog is pending. Reusing the JVM-Clojure [clj-smells catalog](https://github.com/nufuturo-ufcg/clj-smells-catalog) directly produces incorrect findings because ClojureDart's runtime, interop model, and Flutter integration differ from JVM Clojure. ClojureDart has no JVM atoms/refs/agents/`core.async` in the same form, but introduces `:watch`, `:managed`, cells, Flutter widget rebuilds, and Dart interop concerns that the JVM catalog does not cover.
