@@ -43,6 +43,18 @@ Update later with `apm update [-g]`. Remove with `apm uninstall brackendev/cloju
 - [clojure-skills](https://github.com/brackendev/clojure-skills) installed alongside, for the host-neutral baseline.
 - The `cljd-fix` dry step requires a [dry4clj](https://github.com/unclebob/dry4clj) `:dry4clj` alias in `deps.edn`.
 
+## Command guide
+
+A quick guide to every slash command. The detailed entries under [Skills](#skills) cover arguments and examples.
+
+| Command | Use it when | What it does |
+|---------|-------------------|--------------|
+| `/cljd-new` | Starting a new ClojureDart Flutter project | Scaffolds the project with clj-kondo lint setup |
+| `/cljd-fix` | Lint, format, or compilation needs attention | Runs the fix pipeline, rewriting `.cljd` files in the format step with `cljfmt fix` |
+| `/cljd-test` | Running ClojureDart tests | Runs `cljd.test` suites and offers to scaffold tests when none exist |
+| `/cljd-upgrade` | ClojureDart is behind the latest | Rewrites the `tensegritics/clojuredart` `:sha` and verifies with a compile |
+| `/cljd-smells-fix` | Reserved for a future ClojureDart smells fix | Placeholder that prints a not-yet-implemented notice |
+
 ## Skills
 
 User-invocable skills share an argument grammar, scope vocabulary, and mutation default. See [CONVENTIONS.md](CONVENTIONS.md) for the full standard. In short: skills accept natural-language keywords and bare paths; the single sanctioned flag is `--report`; mutating skills apply changes by default.
