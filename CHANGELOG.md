@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+## [0.1.11] - 2026-06-23
+
+### Changed
+
+- The `cljd-fix` dry step is now advisory and scoped to production source, matching `clj-fix`. It scans the source paths declared by `deps.edn` `:paths` rather than a hardcoded `src test`, reads dry4clj's `--edn` output instead of matching a status string, and reports candidates without failing the run or halting the pipeline. The step reports `PASS` when no candidates are found, `REVIEW` when it lists candidates for inspection, `ERROR` when the scan cannot run or parse, or `SKIPPED`. Test directories are excluded by default because repeated test scaffolding is usually intentional.
+- The `cljd-fix` dry step now relies on `unclebob/dry4clj` for `.cljd` coverage. The upstream `source-extensions` set includes `.cljd`, so the `brackendev/dry4clj` `add-cljd-extension` fork is no longer required. The project's `:dry4clj` alias must point at a revision that carries the `.cljd` extension.
+- `CONVENTIONS.md` Rule 3 now states that mutating skills apply safe edits and report findings that require judgment, and that `--report` suppresses intentional source and configuration edits while verification steps such as the compile step and the clj-kondo bootstrap may still write build artifacts and tooling configuration.
+
 ## [0.1.10] - 2026-06-15
 
 ### Changed
