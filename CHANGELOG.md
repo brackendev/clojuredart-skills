@@ -1,6 +1,16 @@
 # Changelog
 
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
 ## [Unreleased]
+
+## [0.1.12] - 2026-07-29
+
+### Removed
+
+- The package manifest no longer declares the top-level `target: all` field. The APM manifest schema deprecates the `all` value: a parser treats the field as though it were absent and falls through to the `--target` flag or filesystem auto-detection, and the value is scheduled to become a hard parse error in a future APM release. Removing the field makes that fall-through behavior permanent. Installation behavior is unchanged, because APM already resolved targets by auto-detection rather than from this field. The separate `compilation.target` setting is not affected.
 
 ## [0.1.11] - 2026-06-23
 
@@ -48,7 +58,7 @@
 - The `cljd-tidy` skill is renamed to `cljd-fix` to adopt the noun-first canonical naming pattern (`<target>-<verb>`) shared across the agent-skills family. The verb suffix `-fix` consistently signals a mutating quality pipeline (lint, format, compile, dry). Operators with a saved `/cljd-tidy` invocation should replace it with `/cljd-fix`. The skill's behavior is unchanged; only the name moves.
 - The `cljd-nav` skill is renamed to `clojuredart-nav` so the prefix matches the other auto-triggered skills in this package (`clojuredart`, `clojuredart-lenses`). The skill remains model-invocable only; no slash command is exposed.
 
-## 0.1.4
+## [0.1.4] - 2026-05-19
 
 ### Added
 
@@ -61,12 +71,9 @@
 - The `cljd-test` skill replaces its `## Determine Scope` section with `## Arguments` and adds a `## Mutation` section. The argument table now exposes the `all` and `<path>` rows alongside the existing `unit` and `widget` step keywords. No `--report` flag, because preview is meaningless for a test run and scaffolding only writes after operator confirmation.
 - The `cljd-upgrade` skill gains a `## Arguments` section, a `## Mutation` section, and a `--report` flag. With `--report`, the skill prints the current `:sha` and the remote `HEAD` from `git ls-remote` without writing `deps.edn` or running the compile.
 - The `cljd-smells-review` placeholder gains a canonical `## Arguments` section using the core scope vocabulary (`(no argument)`, `all`, `<path>`) and an explicit pure-report classification ahead of the eventual implementation.
-
-### Changed
-
 - The `clojuredart-lenses` skill description and `README.md` row now reflect the upstream code-lenses default-versus-opt-in split: `grug`, `Honest Code`, `Tidy First`, and `Parse Don't Validate` are the default lenses; `APOSD` and `Legacy Code` are opt-in (`+aposd`, `+legacy-code`, or direct invocation). The body still contains APOSD and Legacy Code Flutter-specific deltas so the lens can apply them when explicitly invoked.
 
-## 0.1.2
+## [0.1.2] - 2026-05-17
 
 ### Removed
 
@@ -76,7 +83,7 @@
 
 - The `clojuredart` skill's REPL section now includes a recovery step: if the banner did not appear or the port file is missing, the build process is not running or the target is web, so restart `clj -M:cljd flutter` against a native Dart target. The note distinguishes this scenario from ordinary `nc` disconnects, which do not require a restart.
 
-## 0.1.1
+## [0.1.1] - 2026-05-17
 
 ### Changed
 
@@ -84,7 +91,7 @@
 - The `clojuredart-lenses` skill is now a delta-only layer over [clojure-lenses](https://github.com/brackendev/clojure-skills) (in `clojure-skills`). Each of the six philosophy sections (Grug, APOSD, Tidy First, Parse Don't Validate, Honest Code, Legacy Code) keeps only the Flutter and ClojureDart-specific additions and removes the general Clojure restatements.
 - Brand color changed from Clojure logo blue (`#5881D8`) to Flutter blue (`#02569B`) across all eight skills in this package, so runtime UIs can distinguish ClojureDart guidance from the `clojure` baseline at a glance.
 
-## 0.1.0
+## [0.1.0] - 2026-05-17
 
 ### Added
 
