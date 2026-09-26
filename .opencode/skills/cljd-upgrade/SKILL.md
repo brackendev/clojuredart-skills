@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 # Upgrade ClojureDart
 
-Upgrade the ClojureDart dependency in `deps.edn` to the latest commit and verify the project compiles. See `CONVENTIONS.md` in the repo root for the argument grammar this skill follows.
+Upgrade the ClojureDart dependency in `deps.edn` to the latest commit and verify the project compiles.
 
 ## Arguments
 

@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 # ClojureDart Fix
 
-Run lint, format, compile, and duplicate-form checks on a ClojureDart project. The `format` step writes by default; `lint`, `compile`, and `dry` are pure-read of source. See `CONVENTIONS.md` in the repo root for the argument grammar this skill follows.
+Run lint, format, compile, and duplicate-form checks on a ClojureDart project. The `format` step writes by default; `lint`, `compile`, and `dry` are pure-read of source.
 
 ## Arguments
 
@@ -32,7 +32,7 @@ Only the `format` step writes source. It runs `clj -M:cljfmt fix` by default, re
 
 The `lint` step writes upstream clj-kondo exports into `.clj-kondo/imports/tensegritics/clojuredart/` the first time it runs (a one-time bootstrap that is idempotent and committed to version control). The `compile` step writes generated Dart under `lib/cljd-out/`, which is a build artifact, not source. Neither of these writes is affected by `--report`. The `dry` step is pure-read regardless.
 
-This skill excludes vendored, generated, and dependency-locked paths from the file set it walks. The filter combines `.gitignore` matches and a hardcoded floor (`node_modules/`, `vendor/`, `third_party/`, `.bundle/`, `target/`, `build/`, `dist/`, `out/`, `.shadow-cljs/`, `cljd-out/`, `*.lock`, `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `Gemfile.lock`, `Cargo.lock`, `poetry.lock`, `composer.lock`). The `lint` step's clj-kondo bootstrap write into `.clj-kondo/imports/tensegritics/clojuredart/` and the `compile` step's writes to `lib/cljd-out/` are tooling and build artifacts produced by the underlying tools themselves and are outside the source-mutation scope of the rule. Naming a vendored source path directly through `<path>` or `<glob>` bypasses the filter for that target. The full policy is Rule 4 in CONVENTIONS.md.
+This skill excludes vendored, generated, and dependency-locked paths from the file set it walks. The filter combines `.gitignore` matches and a hardcoded floor (`node_modules/`, `vendor/`, `third_party/`, `.bundle/`, `target/`, `build/`, `dist/`, `out/`, `.shadow-cljs/`, `cljd-out/`, `*.lock`, `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `Gemfile.lock`, `Cargo.lock`, `poetry.lock`, `composer.lock`). The `lint` step's clj-kondo bootstrap write into `.clj-kondo/imports/tensegritics/clojuredart/` and the `compile` step's writes to `lib/cljd-out/` are tooling and build artifacts produced by the underlying tools themselves and are outside the source-mutation scope of the rule. Naming a vendored source path directly through `<path>` or `<glob>` bypasses the filter for that target.
 
 ## Steps
 

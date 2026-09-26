@@ -1,8 +1,11 @@
 ---
 name: clojuredart-nav
 description: >-
-  ClojureDart navigation patterns: named routes, go_router, Navigator API,
-  tab navigation, and deep linking in Flutter.
+  Use when adding or changing navigation in a ClojureDart Flutter app (.cljd
+  files): named routes and `pushNamed`, go_router (`GoRouter`, `GoRoute`,
+  `ShellRoute`, `MaterialApp.router`), Navigator push/pop and results,
+  dialogs and bottom sheets, tab navigation (`BottomNavigationBar`, `TabBar`),
+  route parameters, and deep linking.
 user-invocable: false
 ---
 

@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 # ClojureDart Test
 
-Run tests for ClojureDart projects using `cljd.test`. When no test files exist, the skill offers to scaffold them. See `CONVENTIONS.md` in the repo root for the argument grammar this skill follows.
+Run tests for ClojureDart projects using `cljd.test`. When no test files exist, the skill offers to scaffold them.
 
 ## Arguments
 

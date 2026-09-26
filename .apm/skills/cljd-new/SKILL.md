@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 # Scaffold a ClojureDart Flutter Project
 
-Create a new Flutter project with ClojureDart configured and ready to compile. See `CONVENTIONS.md` in the repo root for the argument grammar this skill follows.
+Create a new Flutter project with ClojureDart configured and ready to compile.
 
 ## Arguments
 
@@ -17,7 +17,7 @@ Create a new Flutter project with ClojureDart configured and ready to compile. S
 | `<project-name>`  | Required. Use a valid Dart/Flutter package name: lowercase, underscores allowed, no hyphens (for example, `my_app`). The skill maps the package name to a Clojure namespace by replacing underscores with hyphens (`my-app.main`). |
 | (no argument)     | Prompt the operator for a project name.                                      |
 
-This skill is exempt from the `all` and `<path>` rows of the standard scope vocabulary because scaffolding has no useful default scope. See `CONVENTIONS.md` for the standard.
+This skill does not accept `all` or `<path>` because scaffolding has no useful default scope.
 
 ## Mutation
 
@@ -213,7 +213,7 @@ clj-kondo --copy-configs --dependencies --lint "$(clj -Spath)"
 
 This materializes `.clj-kondo/imports/tensegritics/clojuredart/`, which clj-kondo auto-loads. Commit `.clj-kondo/` to version control.
 
-The upstream `flutter2` hook at recent SHAs does not recognize the `:default`, `:value>`, and `:dispose-value` options to `:watch`, nor does the `cljd-core` hook handle 3-form catches without a body correctly. If clj-kondo produces `unknown keyword option to :watch` warnings for those keywords, or false "unused binding" warnings inside `(catch Exception e body)` where the catch has exactly three forms, patch `.clj-kondo/imports/tensegritics/clojuredart/hooks/flutter2.clj` and `cljd_core.clj`. Upstream fixes are the right long-term answer.
+Some upstream `flutter2` hook revisions do not recognize the `:default`, `:value>`, and `:dispose-value` options to `:watch`, and some `cljd-core` hook revisions mishandle 3-form catches without a body. If clj-kondo produces `unknown keyword option to :watch` warnings for those keywords, or false "unused binding" warnings inside `(catch Exception e body)` where the catch has exactly three forms, patch `.clj-kondo/imports/tensegritics/clojuredart/hooks/flutter2.clj` and `cljd_core.clj`. Upstream fixes are the right long-term answer.
 
 ### 9. Compile and Run
 

@@ -1,6 +1,6 @@
 ---
 name: cljd-smells-fix
-description: "Fix ClojureDart code against ClojureDart-specific smells; placeholder, see TODO. When implemented, auto-applies mechanical and DEFECT-tier findings and reports the rest. Pass --report to disable writes."
+description: "Fix ClojureDart code against ClojureDart-specific smells; placeholder, not yet implemented. When implemented, auto-applies mechanical and DEFECT-tier findings and reports the rest. Pass --report to disable writes."
 argument-hint: "[path|all] [--report]"
 allowed-tools: Bash, Read, Edit, Grep, Glob
 user-invocable: true
@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 # ClojureDart Smells Fix (Placeholder)
 
-This skill is a placeholder. ClojureDart code review against a curated smells catalog is planned but not yet implemented. Running `/cljd-smells-fix` today will show this notice and exit. The argument grammar and mutation contract land now so the eventual implementation has a contract to honor. See `CONVENTIONS.md` in the repo root for the standard.
+This skill is a placeholder. ClojureDart code review against a curated smells catalog is planned but not yet implemented. Running `/cljd-smells-fix` today will show this notice and exit. The argument grammar and mutation contract land now so the eventual implementation has a contract to honor.
 
 ## Arguments
 
@@ -35,7 +35,7 @@ When implemented, the skill mirrors the mutation contract of `/clj-smells-fix`: 
 
 When (no argument) is invoked outside a git worktree, the eventual implementation will ask the operator what to fix rather than widening silently to `all`.
 
-The eventual implementation will honor Rule 4 in CONVENTIONS.md: vendored, generated, and dependency-locked paths are excluded from broad scopes (`.gitignore` matches plus a hardcoded floor of `node_modules/`, `vendor/`, `third_party/`, `.bundle/`, `target/`, `build/`, `dist/`, `out/`, `.shadow-cljs/`, `cljd-out/`, and the standard lock files). Naming a vendored path directly through `<path>` or `<glob>` bypasses the filter for that target.
+The eventual implementation will exclude vendored, generated, and dependency-locked paths from broad scopes (`.gitignore` matches plus a hardcoded floor of `node_modules/`, `vendor/`, `third_party/`, `.bundle/`, `target/`, `build/`, `dist/`, `out/`, `.shadow-cljs/`, `cljd-out/`, and the standard lock files). Naming a vendored path directly through `<path>` or `<glob>` bypasses the filter for that target.
 
 ## Status
 
@@ -53,10 +53,6 @@ When implemented, this review will cover:
 - **Generated files**: editing files under `lib/cljd-out/`, committing generated Dart, missing `.gitignore` entries.
 - **deps.edn / Flutter project config**: missing `:flutter/widget` linter, missing upstream clj-kondo hooks, mixed Clojure and ClojureDart deps.
 
-## Tracking
-
-See `TODO.md` in the repo root.
-
 ## Output
 
 When invoked, print this notice and exit:
@@ -69,7 +65,7 @@ A ClojureDart-specific smells catalog is in development. For now, use:
   - cljd-test for the test suite
   - clojuredart skill (auto-invoked) for idiomatic guidance
 
-To track progress, see TODO.md in the clojuredart-skills repo.
+To track progress, see the clojuredart-skills README and CHANGELOG.
 ```
 
 Do not run any analysis. Do not invoke clj-kondo. Do not consult the JVM clj-smells catalog. Do not write to any source file.

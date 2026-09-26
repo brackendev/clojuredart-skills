@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.1.15] - 2026-09-26
+
+### Changed
+
+- The `clojuredart-nav` skill description now names the navigation work that should activate it, including `.cljd` files, `go_router` types, `Navigator` push and pop, dialogs, bottom sheets, tabs, and route parameters, so the skill loads when navigation code is being written.
+- The `clojuredart` skill now tells the model to require `cljd.flutter` in namespaces that build widgets instead of in every namespace, which avoids unused-namespace lint warnings in logic-only namespaces.
+- The `cljd-new` note about upstream clj-kondo hook defects now describes the affected hook revisions without referring to "recent SHAs", because the scaffold always pins the latest ClojureDart commit.
+
+### Fixed
+
+- The `cljd-smells-fix` notice and description no longer direct users to a `TODO.md` file that is not published with the package. The notice now points to the README and CHANGELOG.
+- The `cljd-fix`, `cljd-new`, `cljd-test`, `cljd-upgrade`, and `cljd-smells-fix` skills no longer refer to a `CONVENTIONS.md` file in the repository root. That file is not present in the projects where the skills run, and each skill already states its own arguments and mutation rules.
+
 ## [0.1.14] - 2026-09-16
 
 ### Changed

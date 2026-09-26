@@ -338,7 +338,7 @@ Defined as methods in `reify`/`deftype`/`defrecord`. A getter takes `[this]`, a 
 
 ## cljd.flutter
 
-`cljd.flutter` is a utility library that removes Flutter boilerplate. Always require it:
+`cljd.flutter` is a utility library that removes Flutter boilerplate. Require it in every namespace that builds widgets:
 
 ```clojure
 (ns my-app.main
