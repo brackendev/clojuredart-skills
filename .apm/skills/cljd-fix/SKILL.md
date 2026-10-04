@@ -44,6 +44,7 @@ If `.clj-kondo/imports/tensegritics/clojuredart/` is missing, bootstrap the upst
 
 ```bash
 if [ ! -d .clj-kondo/imports/tensegritics/clojuredart ]; then
+  mkdir -p .clj-kondo
   clj-kondo --copy-configs --dependencies --lint "$(clj -Spath)" > /dev/null
 fi
 ```
@@ -56,9 +57,17 @@ clj-kondo --lint src test
 
 If the project has no `test/` directory, lint `src` only.
 
+clj-kondo copies configurations only into an existing `.clj-kondo/` directory. Without the `mkdir`, `--copy-configs` exits 0, imports nothing, and the lint reports false unresolved-symbol errors on `cljd.flutter` directives.
+
 Report pass if exit code is 0 and there are no errors or warnings in the output. If the project's lint target is zero-errors-only, fail only on errors. Show the clj-kondo output either way.
 
 ### 2. Format
+
+First read `.cljfmt.edn`. cljfmt's default `:file-pattern` does not match `.cljd`, so without an explicit pattern that matches `.cljd`, `cljfmt fix` and `cljfmt check` skip every ClojureDart file and still exit 0. If `.cljfmt.edn` is missing or its `:file-pattern` does not match `.cljd`, report the format step as `FAIL` without running cljfmt, and show the line to add:
+
+```clojure
+:file-pattern #re "\\.(?:clj[csxd]?|bb)$"
+```
 
 Without `--report`, run cljfmt to fix formatting:
 

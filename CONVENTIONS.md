@@ -67,7 +67,7 @@ The boundary statement: Rule 4 applies to mutating skills that discover candidat
 
 **Reporting.** The skill includes a single "skipped N vendored or generated paths" line in its results when the filter excluded any path. Under `--report`, the skill emits the full list so the operator can audit scope.
 
-**Scope of Rule 4 in this plugin.** Applies to `/cljd-fix` and `/cljd-smells-fix`, both of which discover candidate files from the workspace. Exempt: `/cljd-new` is scaffolding, `/cljd-upgrade` rewrites the ClojureDart `:sha` in `deps.edn`, and `/cljd-test` runs the test suite (its target set is the existing test files, not workspace discovery; the scaffolding path that writes new test files runs only after explicit operator confirmation). The `compile` step of `/cljd-fix` writes generated Dart under `lib/cljd-out/`; build-artifact writes are out of scope for Rule 4 because the rule governs source mutation, not compiler outputs.
+**Scope of Rule 4 in this plugin.** Applies to `/cljd-fix` and `/cljd-smells-fix`, both of which discover candidate files from the workspace. Exempt: `/cljd-new` is scaffolding, `/cljd-upgrade` rewrites the ClojureDart `:tag` and `:sha` in `deps.edn`, and `/cljd-test` runs the test suite (its target set is the existing test files, not workspace discovery; the scaffolding path that writes new test files runs only after explicit operator confirmation). The `compile` step of `/cljd-fix` writes generated Dart under `lib/cljd-out/`; build-artifact writes are out of scope for Rule 4 because the rule governs source mutation, not compiler outputs.
 
 The file-aware mutating skills include a one-line reference to Rule 4 in their own `## Mutation` or `## Scope` section.
 
@@ -88,7 +88,7 @@ A skill is classified by its actual behavior, not by its name. If the name and b
 | `/cljd-fix`           | Mutating        | Yes                    | `format` step runs `cljfmt fix` by default. `--report` swaps it for `cljfmt check`. `lint`, `compile`, and `dry` are pure-read regardless. |
 | `/cljd-new`            | Mutating        | No                     | Scaffolds the project tree. Preview the side effects by reading `SKILL.md`. |
 | `/cljd-test`           | Mutating        | No                     | Runs the test suite and offers to scaffold tests when none exist. Test runs rewrite generated Dart in `lib/cljd-out/` (build artifacts, not source); scaffolding writes source files only after operator confirmation. |
-| `/cljd-upgrade`        | Mutating        | Yes                    | Rewrites the `tensegritics/clojuredart` `:sha` in `deps.edn`. `--report` prints the previous and remote SHA without writing. |
+| `/cljd-upgrade`        | Mutating        | Yes                    | Runs `clj -M:cljd upgrade` to move `tensegritics/clojuredart` to the latest release `:tag` and `:sha` in `deps.edn`. `--report` prints the current and latest release coordinates without writing. |
 | `/cljd-smells-fix`     | Mutating        | Yes                    | Placeholder until the ClojureDart smells catalog ships. When implemented, mirrors the mutation contract of `/clj-smells-fix`: Stage 1 mechanical and Stage 2 DEFECT-band findings auto-applied; `--report` disables all writes. |
 
 Model-invocable skills (`clojuredart`, `clojuredart-lenses`, `clojuredart-nav`) have no argument surface and are not classified here.
@@ -122,7 +122,7 @@ The skill writes when the `format` step runs without `--report`. With `--report`
 ### `/cljd-new` -- mutating skill, exemption from `all`/path rows
 
 ```
-/cljd-new my-app             # creates project tree at ./my-app
+/cljd-new my_app             # creates project tree at ./my_app
 /cljd-new                    # prompts the operator for a project name
 ```
 
@@ -131,12 +131,12 @@ The skill writes when the `format` step runs without `--report`. With `--report`
 ### `/cljd-upgrade` -- mutating skill with `--report`
 
 ```
-/cljd-upgrade                # upgrade deps.edn :sha and run clj -M:cljd compile
-/cljd-upgrade --report       # print current :sha and remote HEAD; no writes
+/cljd-upgrade                # move deps.edn to the latest release and run clj -M:cljd compile
+/cljd-upgrade --report       # print current and latest release tag and SHA; no writes
 /cljd-upgrade all            # synonym for (no argument)
 ```
 
-The default rewrites `:sha` in `deps.edn` and verifies with a compile. With `--report`, the skill prints the current `:sha`, the remote `HEAD` from `git ls-remote`, and the would-be diff. No writes. No compile.
+The default runs `clj -M:cljd upgrade`, which rewrites `:tag` and `:sha` in `deps.edn`, and verifies with a compile. A failed compile restores the original `deps.edn`. With `--report`, the skill prints the current `:tag` and `:sha` and the latest release `:tag` and `:sha` from the release's `deps.latest.edn` asset. No writes. No compile.
 
 ### `/cljd-test` -- mutating skill, no `--report`
 
@@ -176,7 +176,7 @@ The body remains a placeholder until the ClojureDart smells catalog ships. When 
 
 **Step keywords versus scope keywords.** A skill like `/cljd-fix` accepts step keywords (`lint`, `format`, `compile`, `dry`) that select work to run, and scope keywords (`all`) that widen scope. Step keywords are skill-specific and listed in the skill's own table. Scope keywords are shared and listed here. When a skill has both, the `## Arguments` table lists both with clearly distinct rows.
 
-**Tool-level flags the skill calls internally.** A skill may invoke a tool that itself uses POSIX flags (for example, `clj-kondo --lint`, `cljfmt fix`, `cljfmt check`, `git ls-remote`, `flutter pub add --dev`). Those are tool-level flags, not skill flags, and do not count against rule 1. The skill body should disambiguate when a tool flag could be mistaken for a skill flag.
+**Tool-level flags the skill calls internally.** A skill may invoke a tool that itself uses POSIX flags (for example, `clj-kondo --lint`, `cljfmt fix`, `cljfmt check`, `curl --fail --location`, `flutter pub add --dev`). Those are tool-level flags, not skill flags, and do not count against rule 1. The skill body should disambiguate when a tool flag could be mistaken for a skill flag.
 
 ## Author checklist
 

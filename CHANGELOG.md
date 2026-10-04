@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.1.16] - 2026-10-04
+
+### Added
+
+- The `clojuredart` skill documents the `:summon` directive that ClojureDart release `0.9.20261002` recommends over `:get` for new code. The documentation covers class, form, and keyword right-hand sides, the `:as`, `:>`, and `:value>` options, and the `:of` and `:keys` shorthand. A new gotcha explains that the upstream clj-kondo hooks do not recognize `:summon` yet, so the navigation and lenses examples keep using `:get`.
+- The `clojuredart` project workflow reference documents the `--offline` option that `clj -M:cljd compile` and `clj -M:cljd watch` accept to skip `pub get`.
+
+### Changed
+
+- `cljd-new` pins new projects to the latest ClojureDart GitHub Release, using the tag and SHA from the release's `deps.latest.edn` asset, instead of the `HEAD` commit. The template also pins Clojure `1.12.6` and cljfmt `0.16.6`.
+- `cljd-upgrade` now relies on the release-based `clj -M:cljd upgrade`, which rewrites both `:tag` and `:sha`. The skill no longer writes the `HEAD` SHA by hand. It runs the upgrader a second time for projects older than the release-based upgrader, reports `Upgrade aborted` messages without editing `deps.edn`, and restores the whole `deps.edn` when the verification compile fails. `--report` now compares the project against the latest release instead of `HEAD`.
+
+### Fixed
+
+- The `.cljfmt.edn` that `cljd-new` scaffolds now sets a `:file-pattern` that matches `.cljd`. Previously cljfmt skipped every ClojureDart file, so the `cljd-fix` format step passed without formatting anything. The template also replaces the `:indents` map, which overrode cljfmt's default rules and misindented `let` and `when`, with `:extra-indents` entries for `f/run`, `f/widget`, and `f/build`.
+- The `cljd-fix` format step now fails with a fix hint when `.cljfmt.edn` is missing or has no `:file-pattern` that matches `.cljd`, instead of reporting a pass for a run that checked no files.
+- The `cljd-fix` lint step now creates `.clj-kondo/` before importing the upstream ClojureDart clj-kondo configuration. clj-kondo copies configurations only into an existing directory, so in a project without one the import did nothing and the lint reported false unresolved-symbol errors on `cljd.flutter` directives.
+- The `cljd-new` examples now use the valid package name `my_app` instead of `my-app`.
+
 ## [0.1.15] - 2026-09-26
 
 ### Changed

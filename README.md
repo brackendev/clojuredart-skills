@@ -52,7 +52,7 @@ A quick guide to every slash command. The detailed entries under [Skills](#skill
 | `/cljd-new` | Starting a new ClojureDart Flutter project | Scaffolds the project with clj-kondo lint setup |
 | `/cljd-fix` | Lint, format, or compilation needs attention | Runs the fix pipeline, rewriting `.cljd` files in the format step with `cljfmt fix` |
 | `/cljd-test` | Running ClojureDart tests | Runs `cljd.test` suites and offers to scaffold tests when none exist |
-| `/cljd-upgrade` | ClojureDart is behind the latest | Rewrites the `tensegritics/clojuredart` `:sha` and verifies with a compile |
+| `/cljd-upgrade` | ClojureDart is behind the latest release | Moves `tensegritics/clojuredart` to the latest release tag and SHA and verifies with a compile |
 | `/cljd-smells-fix` | Reserved for a future ClojureDart smells fix | Placeholder that prints a not-yet-implemented notice |
 
 ## Skills
@@ -63,15 +63,15 @@ User-invocable skills share an argument grammar, scope vocabulary, and mutation 
 
 #### `/cljd-new <project-name>`
 
-Scaffold a new ClojureDart Flutter project, including clj-kondo lint setup.
+Scaffold a new ClojureDart Flutter project pinned to the latest ClojureDart release, including clj-kondo lint setup and a cljfmt configuration that formats `.cljd` files.
 
 ```bash
-/cljd-new my-app
+/cljd-new my_app
 ```
 
 #### `/cljd-fix [lint|format|compile|dry] [--report] [all]`
 
-Fix a ClojureDart project. Defaults to running all four steps; the `format` step rewrites `.cljd` files in place via `cljfmt fix`. Pass `--report` to swap the format step for `cljfmt check`, which previews diffs without writing. The dry step scans `.clj`, `.cljc`, and `.cljs` files; `.cljd` coverage requires the upstream dry4clj extension (see TODO).
+Fix a ClojureDart project. Defaults to running all four steps; the `format` step rewrites `.cljd` files in place via `cljfmt fix`. Pass `--report` to swap the format step for `cljfmt check`, which previews diffs without writing. The format step fails with a fix hint when `.cljfmt.edn` has no `:file-pattern` that matches `.cljd`, because cljfmt otherwise skips ClojureDart files. The advisory dry step scans `.cljd` files when the project's `:dry4clj` alias points at a dry4clj revision that includes the `.cljd` extension.
 
 ```bash
 /cljd-fix
@@ -90,7 +90,7 @@ Run ClojureDart tests with `cljd.test`. When no test files exist, the skill offe
 
 #### `/cljd-upgrade [--report] [all]`
 
-Upgrade ClojureDart to the latest version. Rewrites the `tensegritics/clojuredart` `:sha` in `deps.edn` and verifies with a compile. Pass `--report` to print the current and remote SHAs without writing.
+Upgrade ClojureDart to the latest GitHub Release. Runs the built-in `clj -M:cljd upgrade`, which rewrites the `tensegritics/clojuredart` `:tag` and `:sha` in `deps.edn`, then verifies with a compile and restores the original `deps.edn` if the compile fails. Pass `--report` to print the current and latest release coordinates without writing.
 
 ```bash
 /cljd-upgrade

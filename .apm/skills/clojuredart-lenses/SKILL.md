@@ -32,7 +32,7 @@ When the [code-lenses](https://github.com/brackendev/code-lenses) plugin is acti
   ```
 - Compose widgets through `f/widget` child threading. Do not subclass `StatelessWidget` or `StatefulWidget`; `f/widget` with directives replaces those class hierarchies.
 - State complexity escalation order: atom, then cell (`f/$`), then `:bind` / `:get` for widget-tree sharing. Reach for cells or bindings only when a single atom no longer fits.
-- Directives (`:watch`, `:managed`, `:bind`, `:get`, `:vsync`) are built-in composition tools that replace Flutter's StatefulWidget boilerplate. They are not complexity demons; use them when they make code shorter.
+- Directives (`:watch`, `:managed`, `:bind`, `:get` or `:summon`, `:vsync`) are built-in composition tools that replace Flutter's StatefulWidget boilerplate. They are not complexity demons; use them when they make code shorter.
 - Type hints (`^String`, `^int`, `^m/Widget`) prevent dynamic warnings that cascade into runtime failures. They are required ceremony at Dart interop boundaries, not optional.
 - `f/widget` produces a widget; `f/build` produces a builder callback. If Flutter asks for a `builder:` parameter, use `f/build`. Do not wrap one in the other.
 

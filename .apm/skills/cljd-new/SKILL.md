@@ -51,11 +51,13 @@ The project name must be a valid Dart/Flutter package name: lowercase, underscor
 
 Create the project directory and `deps.edn` file.
 
-Fetch the latest ClojureDart commit SHA:
+ClojureDart publishes dated GitHub Releases (for example, `0.9.20261002`). Each release carries a `deps.latest.edn` asset pinned to the release tag and its full Git SHA. Fetch it and read the coordinate under `[:deps tensegritics/clojuredart]`:
 
 ```bash
-git ls-remote https://github.com/tensegritics/ClojureDart.git HEAD
+curl --fail --location https://github.com/Tensegritics/ClojureDart/releases/latest/download/deps.latest.edn
 ```
+
+Check that `:tag` matches `0.9.YYYYMMDD` with an optional single lowercase suffix (`0.9.20260822a`) and that `:sha` is a 40-character hexadecimal SHA. If the download fails or either value does not match, stop and report the problem. Do not fall back to the `HEAD` commit: unreleased commits are not what `clj -M:cljd upgrade` targets.
 
 The namespace for `:main` should match the project name with hyphens replacing underscores (e.g., project `my_app` uses namespace `my-app.main`).
 
@@ -67,12 +69,13 @@ Create `<project-name>/deps.edn`:
 
 ```clojure
 {:paths     ["src"]
- :deps      {org.clojure/clojure {:mvn/version "1.12.0"}
+ :deps      {org.clojure/clojure {:mvn/version "1.12.6"}
              tensegritics/clojuredart
              {:git/url "https://github.com/tensegritics/ClojureDart.git"
-              :sha     "<latest-sha>"}}
+              :tag     "<release-tag>"
+              :sha     "<release-sha>"}}
  :aliases   {:cljd {:main-opts ["-m" "cljd.build"]}
-             :cljfmt {:extra-deps {dev.weavejester/cljfmt {:mvn/version "0.13.0"}}
+             :cljfmt {:extra-deps {dev.weavejester/cljfmt {:mvn/version "0.16.6"}}
                       :main-opts ["-m" "cljfmt.main"]}}
  :cljd/opts {:kind :flutter
              :main <namespace>.main}}
@@ -101,12 +104,10 @@ Create `src/<project_name>/main.cljd` with a basic Flutter app:
   (f/run
     (m/MaterialApp .title "<Project Name>")
     .home
-    (m/Scaffold
-      .appBar (m/AppBar .title (m/Text "<Project Name>")))
+    (m/Scaffold .appBar (m/AppBar .title (m/Text "<Project Name>")))
     .body
     m/Center
-    (m/Text "Hello from ClojureDart!"
-      .style (m/TextStyle .fontSize 24.0))))
+    (m/Text "Hello from ClojureDart!" .style (m/TextStyle .fontSize 24.0))))
 ```
 
 Where `<namespace>` uses hyphens (Clojure convention) and `<project_name>` uses underscores (Dart convention).
@@ -115,10 +116,13 @@ Where `<namespace>` uses hyphens (Clojure convention) and `<project_name>` uses 
 
 ```clojure
 {:paths ["src"]
- :indents {ns [[:inner 0]]
-           defn [[:inner 0]]
-           fn [[:inner 0]]}}
+ :file-pattern #re "\\.(?:clj[csxd]?|bb)$"
+ :extra-indents {cljd.flutter/widget [[:inner 0]]
+                 cljd.flutter/build [[:inner 0]]
+                 cljd.flutter/run [[:inner 0]]}}
 ```
+
+cljfmt's default `:file-pattern` matches `.clj`, `.cljc`, `.cljs`, `.cljx`, and `.bb` but not `.cljd`, so without this key `cljfmt check` and `cljfmt fix` skip every ClojureDart file and still exit 0. The regular expression needs the doubled backslash because EDN strings do not accept `\.`. Use `:extra-indents`, not `:indents`: `:indents` replaces cljfmt's default indentation rules, which misindents `let`, `when`, and other core forms. The `:extra-indents` entries give `f/run`, `f/widget`, and `f/build` bodies a two-space indent.
 
 ### 6. Update `analysis_options.yaml`
 
