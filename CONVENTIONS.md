@@ -91,7 +91,7 @@ A skill is classified by its actual behavior, not by its name. If the name and b
 | `/cljd-upgrade`        | Mutating        | Yes                    | Runs `clj -M:cljd upgrade` to move `tensegritics/clojuredart` to the latest release `:tag` and `:sha` in `deps.edn`. `--report` prints the current and latest release coordinates without writing. |
 | `/cljd-smells-fix`     | Mutating        | Yes                    | Placeholder until the ClojureDart smells catalog ships. When implemented, mirrors the mutation contract of `/clj-smells-fix`: Stage 1 mechanical and Stage 2 DEFECT-band findings auto-applied; `--report` disables all writes. |
 
-Model-invocable skills (`clojuredart`, `clojuredart-lenses`, `clojuredart-nav`) have no argument surface and are not classified here.
+The model-only reference skills (`clojuredart`, `clojuredart-lenses`, `clojuredart-nav`) have no argument surface and are not classified here.
 
 ## Section structure
 

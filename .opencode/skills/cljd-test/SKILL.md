@@ -1,9 +1,11 @@
 ---
 name: cljd-test
-description: "Run ClojureDart tests with cljd.test; offers to scaffold when none exist"
+description: >-
+  Run ClojureDart tests with cljd.test, and offer to scaffold test files when
+  none exist. Use when asked to run unit tests, widget tests, or a specific
+  test path in a ClojureDart Flutter project.
 argument-hint: "[unit|widget|all|<path>]"
 user-invocable: true
-disable-model-invocation: true
 ---
 
 # ClojureDart Test

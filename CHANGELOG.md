@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.1.17] - 2026-10-17
+
+### Changed
+
+- In Claude Code and Codex, the agent can now run `/cljd-fix` and `/cljd-test` from a natural-language request, such as "run the ClojureDart tests", as well as from the slash command. Their descriptions now state when to use each one. `/cljd-new`, `/cljd-upgrade`, and `/cljd-smells-fix` remain user-only.
+
 ## [0.1.16] - 2026-10-04
 
 ### Added

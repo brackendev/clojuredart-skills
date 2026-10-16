@@ -1,9 +1,13 @@
 ---
 name: cljd-fix
-description: "Fix a ClojureDart project (lint, format, compile, dry); format writes by default"
+description: >-
+  Fix a ClojureDart project with lint, format, compile, and dry
+  (duplicate-form) steps. The format step writes .cljd files by default. Use
+  when asked to lint, format, compile, or check a ClojureDart Flutter project,
+  or to fix clj-kondo warnings or cljfmt formatting in .cljd files. Use
+  --report to replace the formatting write with cljfmt check.
 argument-hint: "[lint|format|compile|dry] [--report] [all]"
 user-invocable: true
-disable-model-invocation: true
 ---
 
 # ClojureDart Fix

@@ -58,7 +58,8 @@ For the argument grammar, scope vocabulary, and mutation defaults that every use
 
 | Setting | When to use |
 |---------|-------------|
-| `user-invocable: true`, `disable-model-invocation: true` | User-only slash command (for example `cljd-fix`, `cljd-new`). |
-| `user-invocable: false` (or omitted) | Model-invoked from conversation context (for example `clojuredart`, `clojuredart-nav`). |
+| `user-invocable: true`, `disable-model-invocation: true` | User-only slash command, for scaffolding, dependency upgrades, placeholders, and any skill whose changes reach beyond the working tree or are hard to undo (for example `cljd-new`, `cljd-upgrade`). |
+| `user-invocable: true`, no `disable-model-invocation` | Slash command the model can also run from a natural-language request, for a fixer or test runner whose edits stay in the working tree (for example `cljd-fix`, `cljd-test`). Write the description as a trigger. |
+| `user-invocable: false` | Model-invoked from conversation context (for example `clojuredart`, `clojuredart-nav`). |
 
 Every skill carries `agents/openai.yaml` whose `policy.allow_implicit_invocation` matches the table above (`true` for model-invoked, `false` for user-only). All skills use the Flutter blue brand color, `#02569B`, so runtime UIs can distinguish ClojureDart guidance from the host-neutral `clojure` baseline (Clojure logo blue, `#5881D8`), the JVM `clojure-jvm` skill (Java orange, `#E76F00`), the ClojureScript skill (JavaScript yellow, `#F7DF1E`), the Biff framework skill (Biff indigo, `#4338CA`), and the Fulcro framework skill (Fulcro teal, `#009E9E`).
