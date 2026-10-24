@@ -1,15 +1,3 @@
 {
-  "$schema": "https://opencode.ai/config.json",
-  "permission": {
-    "skill": {
-      "cljd-fix": "allow",
-      "cljd-new": "allow",
-      "cljd-smells-fix": "allow",
-      "cljd-test": "allow",
-      "cljd-upgrade": "allow",
-      "clojuredart": "allow",
-      "clojuredart-lenses": "allow",
-      "clojuredart-nav": "allow"
-    }
-  }
+  "$schema": "https://opencode.ai/config.json"
 }
