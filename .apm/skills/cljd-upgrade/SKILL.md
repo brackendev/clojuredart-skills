@@ -30,7 +30,7 @@ Mutates `deps.edn` by default. `clj -M:cljd upgrade` replaces the `:sha` of `ten
 
 Verify `deps.edn` exists in the current directory and contains a top-level `tensegritics/clojuredart` dependency. If not, stop and tell the user.
 
-The built-in upgrader handles only a coordinate that uses the upstream Git URL `https://github.com/tensegritics/ClojureDart.git` and a full 40-character `:sha`. Projects that use `:local/root`, a fork URL, or a coordinate supplied by an alias need a manual update. The upgrader refuses those cases on its own; see step 3.
+The built-in upgrader edits only the top-level `:deps` entry in `deps.edn`, and only when it uses the upstream Git URL `https://github.com/tensegritics/ClojureDart.git` and a full 40-character `:sha`. It refuses, and leaves `deps.edn` unchanged, when the project uses `:local/root`, a fork URL, or a coordinate supplied by an alias, or when the active coordinate appears more than once. The user must update such a coordinate manually. This skill does not edit it (see step 3).
 
 ## Steps
 
@@ -70,7 +70,7 @@ Run the built-in upgrade command:
 clj -M:cljd upgrade
 ```
 
-If the command exits non-zero, it prints `Upgrade aborted:` followed by the reason and leaves `deps.edn` unchanged. Common reasons are a custom Git URL, a `:local/root` coordinate, a coordinate supplied by an alias, and a refusal to downgrade from a newer tag. Report the full message and stop. Do not edit the coordinate by hand.
+If the command exits non-zero, it prints `Upgrade aborted:` followed by the reason and leaves `deps.edn` unchanged. Common reasons are the coordinates listed under Prerequisites and a refusal to downgrade from a newer tag. Report the full message and stop. Do not edit the coordinate by hand.
 
 Read `deps.edn` again. If its `:sha` still differs from the latest SHA, run `clj -M:cljd upgrade` once more. Projects pinned to a ClojureDart commit older than the release-based upgrader reach an intermediate bridge commit on the first run and the latest release on the second run. If the coordinate still does not match the latest release after the second run, report both coordinates and stop.
 
@@ -102,4 +102,3 @@ ClojureDart upgraded:
 ## Gotchas
 
 - Do not pin `tensegritics/clojuredart` to the `HEAD` commit from `git ls-remote`. `HEAD` can be ahead of the latest release. A coordinate without a `:tag` gets no downgrade protection, so the next `clj -M:cljd upgrade` moves such a project back to the latest release.
-- `clj -M:cljd upgrade` edits only the top-level `:deps` entry in `deps.edn`. It reports an error instead of guessing when the active coordinate appears more than once or lives in an alias.

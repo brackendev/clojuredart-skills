@@ -51,12 +51,10 @@ The `.cljfmt.edn` template, including the `:file-pattern` that makes cljfmt form
 
 ## Tooling
 
+The ClojureDart commands are listed under CLI above. The other tools:
+
 | Tool | Command | Purpose |
 |------|---------|---------|
-| ClojureDart (dev) | `clj -M:cljd flutter` | Compile, watch, hot reload |
-| ClojureDart (AOT) | `clj -M:cljd compile` | Compile for deployment |
-| ClojureDart (init) | `clj -M:cljd init` | Initialize project |
-| ClojureDart (update) | `clj -M:cljd upgrade` | Move to the latest ClojureDart release |
 | clj-kondo | `clj-kondo --lint src` | Lint `.cljd` files |
 | cljfmt | `clj -M:cljfmt fix` | Format `.cljd` files |
 | Babashka | `bb script.bb` | Build scripts and automation |

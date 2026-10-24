@@ -22,7 +22,7 @@ When the [code-lenses](https://github.com/brackendev/code-lenses) plugin is acti
 
 ## Grug Brain
 
-- Reach for `deftype` only when implementing a Dart interface or extending a Flutter class. The widget tree itself is the primary structure; do not add abstraction layers on top of it.
+- Reach for `deftype` only when implementing a Dart interface or extending a Flutter class that `f/widget` does not replace, such as `CustomPainter` or `ChangeNotifier`. Widgets themselves come from `f/widget` (see below). The widget tree itself is the primary structure; do not add abstraction layers on top of it.
 - For conditional rendering, use the `:when` directive inside `f/widget` rather than wrapping subtrees in `if` / `cond`:
   ```clojure
   ;; Flat: use :when
@@ -30,18 +30,16 @@ When the [code-lenses](https://github.com/brackendev/code-lenses) plugin is acti
     :when show-detail?
     (detail-panel data))
   ```
-- Compose widgets through `f/widget` child threading. Do not subclass `StatelessWidget` or `StatefulWidget`; `f/widget` with directives replaces those class hierarchies.
+- Compose widgets through `f/widget` child threading and directives (`:watch`, `:managed`, `:bind`, `:get` or `:summon`, `:vsync`). Do not subclass `StatelessWidget` or `StatefulWidget`. The directives replace those class hierarchies and Flutter's StatefulWidget boilerplate. They are built-in composition tools, not complexity demons, so use them when they make code shorter.
 - State complexity escalation order: atom, then cell (`f/$`), then `:bind` / `:get` for widget-tree sharing. Reach for cells or bindings only when a single atom no longer fits.
-- Directives (`:watch`, `:managed`, `:bind`, `:get` or `:summon`, `:vsync`) are built-in composition tools that replace Flutter's StatefulWidget boilerplate. They are not complexity demons; use them when they make code shorter.
 - Type hints (`^String`, `^int`, `^m/Widget`) prevent dynamic warnings that cascade into runtime failures. They are required ceremony at Dart interop boundaries, not optional.
 - `f/widget` produces a widget; `f/build` produces a builder callback. If Flutter asks for a `builder:` parameter, use `f/build`. Do not wrap one in the other.
 
 ## A Philosophy of Software Design
 
 - `f/widget` and the directive set are deep modules: a simple declarative surface (interleaved expressions and directives) over powerful implementation (state, lifecycle, context, composition). Preserve that depth; do not reimplement what directives already provide.
-- Hide Flutter plumbing behind namespace boundaries: controller lifecycle goes in `:managed`, inherited widget lookups go in `:get`, animation setup goes in `:vsync`. Callers pass data; the widget function handles Flutter mechanics.
+- Hide Flutter plumbing behind namespace boundaries and push it downward into directives: `:managed` owns controller lifecycle and calls `dispose` automatically, `:get` performs inherited widget lookups, and `:vsync` provides a `TickerProvider` without exposing the mixin. Callers pass data, and the widget function stays focused on rendering.
 - `:bind` and `:get` are the ClojureDart dependency injection mechanism. Shared state, theme data, and services flow through the widget tree without being passed as function arguments.
-- Directive-managed lifecycle pushes complexity downward: `:managed` handles `dispose` automatically; `:vsync` provides a `TickerProvider` without exposing the mixin. Widget functions stay focused on rendering.
 
 ## Tidy First
 
@@ -55,12 +53,11 @@ When the [code-lenses](https://github.com/brackendev/code-lenses) plugin is acti
   ```
 - Extract widget subtrees into named functions. A widget function returns a widget or `f/widget` form. Keep each focused on one visual concern.
 - Place `:let`, `:watch`, and `:managed` directives close to where their bindings are first used. Split large `f/widget` forms into smaller widget functions when the directives serve different concerns.
-- Chunk directive blocks (state setup) from widget expressions (rendering) with blank lines:
+- Chunk statements by grouping directive blocks (state setup) at the top of the `f/widget` form, before the widget expressions (rendering). Do not separate them with blank lines, because the `clojure` skill's Formatting rules allow a blank line inside a definition only between `let` or `cond` pairs that do not fit on one line. When the two parts are hard to tell apart, extract a widget function instead:
   ```clojure
   (f/widget
     :watch [items app-state]
     :managed [scroll-ctrl (m/ScrollController)]
-
     (m/ListView.builder
       .controller scroll-ctrl
       .itemCount (count items)

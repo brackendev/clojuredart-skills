@@ -36,7 +36,7 @@ Only the `format` step writes source. It runs `clj -M:cljfmt fix` by default, re
 
 The `lint` step writes upstream clj-kondo exports into `.clj-kondo/imports/tensegritics/clojuredart/` the first time it runs (a one-time bootstrap that is idempotent and committed to version control). The `compile` step writes generated Dart under `lib/cljd-out/`, which is a build artifact, not source. Neither of these writes is affected by `--report`. The `dry` step is pure-read regardless.
 
-This skill excludes vendored, generated, and dependency-locked paths from the file set it walks. The filter combines `.gitignore` matches and a hardcoded floor (`node_modules/`, `vendor/`, `third_party/`, `.bundle/`, `target/`, `build/`, `dist/`, `out/`, `.shadow-cljs/`, `cljd-out/`, `*.lock`, `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `Gemfile.lock`, `Cargo.lock`, `poetry.lock`, `composer.lock`). The `lint` step's clj-kondo bootstrap write into `.clj-kondo/imports/tensegritics/clojuredart/` and the `compile` step's writes to `lib/cljd-out/` are tooling and build artifacts produced by the underlying tools themselves and are outside the source-mutation scope of the rule. Naming a vendored source path directly through `<path>` or `<glob>` bypasses the filter for that target.
+This skill excludes vendored, generated, and dependency-locked paths from the file set it walks. The filter combines `.gitignore` matches and a hardcoded floor (`node_modules/`, `vendor/`, `third_party/`, `.bundle/`, `target/`, `build/`, `dist/`, `out/`, `.shadow-cljs/`, `cljd-out/`, `*.lock`, `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `Gemfile.lock`, `Cargo.lock`, `poetry.lock`, `composer.lock`). The `lint` step's clj-kondo bootstrap write into `.clj-kondo/imports/tensegritics/clojuredart/` and the `compile` step's writes to `lib/cljd-out/` are tooling and build artifacts produced by the underlying tools themselves and are outside the source-mutation scope of the rule. Naming a vendored source path directly through `<path>` or `<glob>` bypasses the filter for that target. When the filter excludes any path, add a single "skipped N vendored or generated paths" line to the report. Under `--report`, list every skipped path.
 
 ## Steps
 
@@ -140,4 +140,4 @@ ClojureDart Fix Results:
   Dry:     PASS/REVIEW/ERROR/SKIPPED
 ```
 
-If `--report` was passed, append `(report mode: format checked, not written)` after the summary. If a lint, format, or compile step fails, stop and report the failure; do not continue to subsequent steps. The dry step is advisory: it never fails the run and never halts the pipeline.
+If `--report` was passed, append `(report mode: format checked, not written)` after the summary. If a lint, format, or compile step fails, stop and report the failure; do not continue to subsequent steps.

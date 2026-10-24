@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.1.20] - 2026-10-24
+
+### Fixed
+
+- `cljd-test` declares widget, integration, and tagged tests with the inline `deftest` options `:runner (ft/testWidgets [tester])` and `:tags [...]`. `deftest` ignores `^{:runner ...}` and `^{:tags ...}` metadata, so tests written from the earlier examples passed without running their bodies, and tag selection matched nothing.
+- `cljd-test` puts `:dart.test/dir` in the namespace attribute map, because the compiler ignores metadata on the namespace symbol. Widget assertions use `ft/expect` with `ft/findsOneWidget` and `ft/findsNothing`, because a finder is never nil. Compiled test files are shown under `test/cljd-out/`, a test namespace can be named after `clj -M:cljd test`, and `++` appends to `:dart-test-args` while `--` replaces them.
+- The `clojuredart` skill says that `instance?` works with a literal class, shows `(Foo a b nil {} -1)` as the direct record constructor, and says that the trailing dot and `new` are accepted but optional.
+- The `clojuredart` skill's Extending Classes example extends `CustomPainter` instead of `StatelessWidget`, and `clojuredart-lenses` limits `deftype` to Flutter classes that `f/widget` does not replace. Both now agree that widgets come from `f/widget`.
+- `clojuredart-lenses` no longer suggests blank lines between `f/widget` directives and widget expressions, which the `clojure` skill's formatting rules and ClojureDart's own code do not use.
+- `/cljd-upgrade` says that the user updates a coordinate the built-in upgrader refuses, and that the skill does not edit it.
+- `/cljd-fix` adds a "skipped N vendored or generated paths" line to the report when the vendored-path filter excludes any path, and list those paths under `--report`, as Rule 4 of `CONVENTIONS.md` requires.
+
+### Changed
+
+- The `clojuredart` skill states each rule once. Its Common Mistakes entries that repeated a Key Rule are now part of that rule, and `cljd-test`, `cljd-upgrade`, and `clojuredart-lenses` follow the same pattern.
+
 ## [0.1.19] - 2026-10-24
 
 ### Removed
