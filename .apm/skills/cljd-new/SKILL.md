@@ -76,10 +76,16 @@ Create `<project-name>/deps.edn`:
               :sha     "<release-sha>"}}
  :aliases   {:cljd {:main-opts ["-m" "cljd.build"]}
              :cljfmt {:extra-deps {dev.weavejester/cljfmt {:mvn/version "0.16.6"}}
-                      :main-opts ["-m" "cljfmt.main"]}}
+                      :main-opts ["-m" "cljfmt.main"]}
+             :dry4clj {:extra-deps {io.github.unclebob/dry4clj
+                                    {:git/url "https://github.com/unclebob/dry4clj.git"
+                                     :git/sha "5994ef2bcaaae8d12bcd0afb4f091ae09083228c"}}
+                       :main-opts ["-m" "dry4clj.core"]}}
  :cljd/opts {:kind :flutter
              :main <namespace>.main}}
 ```
+
+`dry4clj` is not published to Clojars, so the `:dry4clj` alias uses a Git coordinate pinned to a commit. That commit scans `.cljd` files, and `/cljd-fix` uses the alias for its duplicate-form step.
 
 ### 3. Initialize the Project
 

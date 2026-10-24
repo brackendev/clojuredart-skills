@@ -44,7 +44,7 @@ Report-only mode suppresses intentional source and project-configuration edits. 
 
 Only the literal token `--report` enables report-only mode. Natural-language phrases ("preview", "dry run", "rehearse") are scope input or step keywords, not mode triggers. A skill that conflates them is wrong.
 
-Command suffixes reinforce the default. The family follows a noun-first `<target>-<verb>` pattern, so the trailing verb signals behavior. Skills with suffix `-fix`, `-new`, `-test`, `-upgrade` (verbs that imply action) mutate by default; in this package, `/cljd-fix`, `/cljd-new`, `/cljd-test`, `/cljd-upgrade`, and the forthcoming `/cljd-smells-fix`. Skills with suffix `-review` (a reading verb) are pure-report; this package currently has none.
+Command suffixes reinforce the default. The family follows a noun-first `<target>-<verb>` pattern, so the trailing verb signals behavior. Skills with suffix `-fix`, `-new`, `-test`, `-upgrade` (verbs that imply action) mutate by default. In this package they are `/cljd-fix`, `/cljd-new`, `/cljd-test`, and `/cljd-upgrade`. Skills with suffix `-review` (a reading verb) are pure-report, and this package has none.
 
 ### Rule 4: vendored and generated paths are excluded by default
 
@@ -67,7 +67,7 @@ The boundary statement: Rule 4 applies to mutating skills that discover candidat
 
 **Reporting.** The skill includes a single "skipped N vendored or generated paths" line in its results when the filter excluded any path. Under `--report`, the skill emits the full list so the operator can audit scope.
 
-**Scope of Rule 4 in this plugin.** Applies to `/cljd-fix` and `/cljd-smells-fix`, both of which discover candidate files from the workspace. Exempt: `/cljd-new` is scaffolding, `/cljd-upgrade` rewrites the ClojureDart `:tag` and `:sha` in `deps.edn`, and `/cljd-test` runs the test suite (its target set is the existing test files, not workspace discovery; the scaffolding path that writes new test files runs only after explicit operator confirmation). The `compile` step of `/cljd-fix` writes generated Dart under `lib/cljd-out/`; build-artifact writes are out of scope for Rule 4 because the rule governs source mutation, not compiler outputs.
+**Scope of Rule 4 in this plugin.** Applies to `/cljd-fix`, which discovers candidate files from the workspace. Exempt: `/cljd-new` is scaffolding, `/cljd-upgrade` rewrites the ClojureDart `:tag` and `:sha` in `deps.edn`, and `/cljd-test` runs the test suite (its target set is the existing test files, not workspace discovery, and the scaffolding path that writes new test files runs only after explicit operator confirmation). The `compile` step of `/cljd-fix` writes generated Dart under `lib/cljd-out/`. Build-artifact writes are out of scope for Rule 4 because the rule governs source mutation, not compiler outputs.
 
 The file-aware mutating skills include a one-line reference to Rule 4 in their own `## Mutation` or `## Scope` section.
 
@@ -89,7 +89,6 @@ A skill is classified by its actual behavior, not by its name. If the name and b
 | `/cljd-new`            | Mutating        | No                     | Scaffolds the project tree. Preview the side effects by reading `SKILL.md`. |
 | `/cljd-test`           | Mutating        | No                     | Runs the test suite and offers to scaffold tests when none exist. Test runs rewrite generated Dart in `lib/cljd-out/` (build artifacts, not source); scaffolding writes source files only after operator confirmation. |
 | `/cljd-upgrade`        | Mutating        | Yes                    | Runs `clj -M:cljd upgrade` to move `tensegritics/clojuredart` to the latest release `:tag` and `:sha` in `deps.edn`. `--report` prints the current and latest release coordinates without writing. |
-| `/cljd-smells-fix`     | Mutating        | Yes                    | Placeholder until the ClojureDart smells catalog ships. When implemented, mirrors the mutation contract of `/clj-smells-fix`: Stage 1 mechanical and Stage 2 DEFECT-band findings auto-applied; `--report` disables all writes. |
 
 The model-only reference skills (`clojuredart`, `clojuredart-lenses`, `clojuredart-nav`) have no argument surface and are not classified here.
 
@@ -150,25 +149,13 @@ The default runs `clj -M:cljd upgrade`, which rewrites `:tag` and `:sha` in `dep
 
 The default runs the suite. Compilation of `.cljd` to `.dart` test files is a build-artifact write, not source mutation. The "offer to scaffold when no tests exist" path writes source files only after operator confirmation, which is captured in the `## Mutation` section.
 
-### `/cljd-smells-fix` -- mutating skill with `--report` (placeholder)
-
-```
-/cljd-smells-fix                         # fix changed files
-/cljd-smells-fix src/my_app              # fix files under directory
-/cljd-smells-fix src/my_app/core.cljd    # fix specific file
-/cljd-smells-fix all                     # fix the full codebase
-/cljd-smells-fix --report                # produce the report only; no writes
-```
-
-The body remains a placeholder until the ClojureDart smells catalog ships. When implemented, the skill will mirror the mutation contract of `/clj-smells-fix`: Stage 1 mechanical findings and Stage 2 `DEFECT`-tier findings within a defined safety band are auto-applied; `SMELL` and `HINT` findings remain report-only; `--report` disables all writes.
-
 ## Exemptions
 
 `/cljd-new` accepts a required positional `<project-name>` because no useful default exists for scaffolding. It omits the `all` and `<path>` scope rows and the `--report` flag for the same reason. The `## Arguments` table in its `SKILL.md` documents the positional grammar.
 
 ## Ambiguity notes
 
-**`(no argument)` outside a git worktree.** A skill whose narrowest useful default depends on git state (for example, "review changed files") must define the fallback when no git worktree is present. The expected fallback is to ask the operator what to review rather than to widen silently to `all`. In this plugin, `/cljd-smells-fix` will document this fallback when its body lands; `/cljd-fix`, `/cljd-test`, and `/cljd-upgrade` derive scope from `deps.edn` and the project tree rather than from a diff, so the question does not apply.
+**`(no argument)` outside a git worktree.** A skill whose narrowest useful default depends on git state (for example, "review changed files") must define the fallback when no git worktree is present. The expected fallback is to ask the operator what to review rather than to widen silently to `all`. In this plugin, `/cljd-fix`, `/cljd-test`, and `/cljd-upgrade` derive scope from `deps.edn` and the project tree rather than from a diff, so the question does not apply.
 
 **`commit` versus staged-and-unstaged state.** When a future skill accepts `commit` as a scope keyword, it must state whether `commit` means the most recent commit, the staged tree, or the staged-plus-unstaged working tree. The expected default is the most recent commit. None of the current skills carry this scope.
 

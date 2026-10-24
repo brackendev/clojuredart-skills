@@ -107,6 +107,14 @@ Determine the project's production source directories from its build configurati
 
 Scan the production source paths only and exclude test paths. If no configuration declares source paths, scan the source directories that exist in the repository, excluding any test directory. Do not assume `src`.
 
+Check that `deps.edn` defines a `:dry4clj` alias before running the scan. When it does not, report `SKIP` and show the alias to add under `:aliases`:
+
+```clojure
+:dry4clj {:extra-deps {io.github.unclebob/dry4clj {:git/url "https://github.com/unclebob/dry4clj.git"
+                                                    :git/sha "5994ef2bcaaae8d12bcd0afb4f091ae09083228c"}}
+           :main-opts  ["-m" "dry4clj.core"]}
+```
+
 Run dry4clj with EDN output over the resolved paths:
 
 ```bash
@@ -115,18 +123,20 @@ clj -M:dry4clj --edn <source-paths...>
 
 Do not pass `--threshold`, `--min-lines`, or `--min-nodes`. Scoping to production source removes the dominant noise, which is repeated test scaffolding; tightening the score or size knobs either hides real matches or has no effect on exact-structure duplicates.
 
-dry4clj always exits 0, and the EDN output never prints a clean-state message, so do not use the exit code or any text match as the signal. Parse the EDN map `{:candidates [...]}` and classify the result:
+dry4clj exits 0 after a completed scan, and the EDN output never prints a clean-state message, so do not use the exit code or any text match to detect duplicates. A non-zero exit means the scan itself failed (for example, a file the reader cannot parse) and is reported as `ERROR`. Parse the EDN map `{:candidates [...]}` and classify the result:
 
 | Result   | Condition                                                                                                                  |
 |----------|----------------------------------------------------------------------------------------------------------------------------|
 | `PASS`   | `:candidates` is empty.                                                                                                     |
 | `REVIEW` | `:candidates` has one or more entries. List them and continue.                                                             |
-| `ERROR`  | The command cannot run or its output cannot be parsed (for example, the `:dry4clj` alias is missing). Report the cause; do not report `PASS`. |
-| `SKIP`   | No production source path can be identified.                                                                               |
+| `ERROR`  | The command fails or its output cannot be parsed. Report the cause, and do not report `PASS`. |
+| `SKIP`   | No production source path can be identified, or `deps.edn` defines no `:dry4clj` alias. |
 
 For `REVIEW`, sort candidates by exact matches first (`:score` equal to `1.0`), then by descending `min(:left-nodes, :right-nodes)`, then by descending `:score`. Report the scanned source paths, the candidate count, and the highest-priority candidates with their score, node counts, and both file ranges. Note that each candidate needs source inspection before extraction, and that test directories were excluded because repeated test scaffolding is often intentional.
 
 dry4clj's `source-extensions` set includes `.cljd`, so ClojureDart source is scanned without additional configuration, provided the project's `:dry4clj` alias points at a `unclebob/dry4clj` revision that carries the `.cljd` extension. Older revisions scan only `.clj`, `.cljc`, and `.cljs`.
+
+dry4clj reads source without resolving namespace aliases, so an alias-qualified auto-resolved keyword such as `::str/ok` stops the scan with "Invalid token" and a non-zero exit. Plain auto-resolved keywords such as `::ok` read correctly. Report the file and the error as `ERROR`, keep the step advisory, and do not rewrite source to work around the reader.
 
 ## Report
 

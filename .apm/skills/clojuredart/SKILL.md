@@ -700,8 +700,10 @@ For even finer control, use cells to pre-compute the exact value a widget needs:
 After running `clj -M:cljd flutter`, a socket REPL starts and announces itself:
 
 ```
-=== 🤫 ClojureDart REPL === listening on port === 60003 ===
+=== 🤫 ClojureDart REPL === listening on port === <port> ===
 ```
+
+The port varies between runs, so read it from this line. The examples below use `<port>` for it.
 
 Connect with:
 
@@ -760,10 +762,10 @@ Interactive use with `nc` works as documented. For scripted use (tests, automati
   # Take a screenshot, run assertions, etc.
   echo '(swap! my.app.state/auth-state assoc :error nil)'
   sleep 1
-) | nc localhost 60003
+) | nc localhost <port>
 
 # Single form works too. Give the REPL a moment to write back before stdin EOFs.
-(echo '(+ 1 2)'; sleep 1) | nc localhost 60003
+(echo '(+ 1 2)'; sleep 1) | nc localhost <port>
 ```
 
 ### REPL Limitations

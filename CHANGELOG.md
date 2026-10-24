@@ -6,6 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.1.21] - 2026-10-24
+
+### Added
+
+- The Companion packages table lists [electric-skills](https://github.com/brackendev/electric-skills), the new companion package for the [Electric](https://github.com/hyperfiddle/electric) v3 full-stack framework, and `CONTRIBUTING.md` cites its Hyperfiddle lavender brand color (`#B7A4C2`).
+
+### Changed
+
+- The Companion packages table names the major version each framework package targets: Biff 2, Electric v3, and Fulcro 3. The skills in those packages do not apply to other major versions.
+- `/cljd-new` adds a `:dry4clj` alias, so `/cljd-fix` runs its duplicate-form step on a new project. The pinned dry4clj commit scans `.cljd` files. When a project has no such alias, `/cljd-fix` reports the dry step as `SKIP` and shows the alias to add, instead of reporting `ERROR`.
+- `CONTRIBUTING.md` asks for a changelog entry and a version increment for every change to a published file, including documentation-only changes, which matches the release history. It asked for entries only for user-facing changes.
+
+### Removed
+
+- The `/cljd-smells-fix` placeholder is removed. It only printed a not-implemented notice. `/clj-smells-fix` from clojure-skills now covers host-neutral smells in `.cljd` files.
+
+### Fixed
+
+- The `CONTRIBUTING.md` Layout table names the local `AGENTS.md`, `GEMINI.md`, and `TODO.md` files. It named `CLAUDE.md`, which the package does not use.
+- The README explains how Codex, OpenCode, and Gemini CLI offer the commands: Codex runs a skill as `$name` from its `/skills` list, OpenCode attaches one with `@name`, and Gemini CLI does not read the user-only setting. It said every command appears as a slash command and that user-only commands run only when typed.
+- The `clojuredart` skill's scripted REPL examples use a `<port>` placeholder, because the ClojureDart REPL port varies between runs. They hardcoded port 60003.
+- `CONTRIBUTING.md` states that `agents/openai.yaml` sets `allow_implicit_invocation` to `true` for every skill the model can run, including slash commands that the model can also run. It named only model-invoked and user-only skills.
+- `/cljd-fix` reports the dry step as `ERROR` when dry4clj stops on an alias-qualified auto-resolved keyword such as `::str/ok`, which the pinned dry4clj commit cannot read, and keeps the step advisory. It said that dry4clj always exits 0.
+
 ## [0.1.20] - 2026-10-24
 
 ### Fixed
