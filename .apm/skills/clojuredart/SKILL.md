@@ -29,7 +29,7 @@ Layered on top of the [clojure](https://github.com/brackendev/clojure-skills) sk
 9. **Use `(->Foo a b)` / `(map->Foo {...})` factories for records.** The baseline rule applies, and calling the record constructor directly, `(Foo a b nil {} -1)`, requires three extra arguments (meta, extmap, hash) that the factory functions supply automatically. Always call the factory.
 10. **`with-redefs` and `with-redefs-fn` are unavailable in ClojureDart.** The JVM testing idiom of redefining vars at test time does not translate. For test seams, pass dependencies as function arguments or expose them through `:bind` / `:get` so tests can supply alternatives.
 
-For CLI commands, project structure, deps.edn configuration, and tooling, read `references/project-workflows.md`.
+For CLI commands, project structure, deps.edn configuration, new project setup, clj-kondo setup, and tooling, read `references/project-workflows.md`.
 
 ## Dart Interop Syntax
 
@@ -915,5 +915,5 @@ Compilation warnings come in two flavors with different fixes. Both exit with st
 ### Common Mistakes
 
 - **`instance?` with a class that is not a literal.** Dart needs the type in an `is` check written literally. `(instance? String x)` works because it expands to `(dart/is? x String)`, but a class held in a local or var fails to compile, and `instance?` used as a function value, as in `(partial instance? String)`, throws `UnsupportedError` at runtime. Pass the class literally, or write `(dart/is? x Type)`.
-- **clj-kondo noise on `cljd.flutter/widget` or `cljd.test/deftest`.** Without the project's clj-kondo hooks and upstream exports, the linter produces hundreds of false positives on widget directives and test runners. See `cljd-new` for the setup, or create `.clj-kondo/` (clj-kondo copies configurations only into an existing directory) and run `clj-kondo --copy-configs --dependencies --lint "$(clj -Spath)"` plus the `cljd.test/deftest` hook documented there.
+- **clj-kondo noise on `cljd.flutter/widget` or `cljd.test/deftest`.** Without the project's clj-kondo hooks and upstream exports, the linter produces hundreds of false positives on widget directives and test runners. Follow the clj-kondo setup in `references/project-workflows.md`: add the `cljd.test/deftest` hook and `.clj-kondo/config.edn`, then run `clj-kondo --copy-configs --dependencies --lint "$(clj -Spath)"`.
 - **clj-kondo does not understand `:summon` yet.** The upstream hooks (as of ClojureDart `0.9.20261002`) do not handle the `:summon` directive, so every name it binds is reported as an unresolved symbol, even though the code compiles. Until upstream adds hook support, either keep `:get` in linted code or accept the findings for `:summon` forms.

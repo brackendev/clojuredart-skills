@@ -48,7 +48,7 @@ For the argument grammar, scope vocabulary, and mutation defaults that every use
 
 | Setting | When to use |
 |---------|-------------|
-| `user-invocable: true`, `disable-model-invocation: true` | User-only slash command, for scaffolding, dependency upgrades, and any skill whose changes reach beyond the working tree or are hard to undo (for example `cljd-new`, `cljd-upgrade`). |
+| `user-invocable: true`, `disable-model-invocation: true` | User-only slash command, for scaffolding, dependency upgrades, and any skill whose changes reach beyond the working tree or are hard to undo (for example `cljd-upgrade`). |
 | `user-invocable: true`, no `disable-model-invocation` | Slash command the model can also run from a natural-language request, for a fixer or test runner whose edits stay in the working tree (for example `cljd-fix`, `cljd-test`). Write the description as a trigger. |
 | `user-invocable: false` | Model-invoked from conversation context (for example `clojuredart`, `clojuredart-nav`). |
 

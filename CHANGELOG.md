@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.1.22] - 2026-10-25
+
+### Changed
+
+- The `clojuredart` skill's project workflow reference covers new project setup: the `deps.edn` shape with the `:cljfmt` and `:dry4clj` aliases, `clj -M:cljd init`, `.cljfmt.edn` with a `:file-pattern` that matches `.cljd`, and the clj-kondo configuration with the `cljd.test/deftest` hook. The agent follows it when asked to create a ClojureDart project.
+- The Companion packages table describes biff-skills as covering Biff 2 conventions and deployment, because that package no longer scaffolds projects.
+
+### Removed
+
+- The `/cljd-new` slash command is removed. Ask the agent to create a ClojureDart project instead, and the `clojuredart` skill supplies the setup steps.
+
 ## [0.1.21] - 2026-10-24
 
 ### Added

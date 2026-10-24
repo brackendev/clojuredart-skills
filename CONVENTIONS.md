@@ -44,7 +44,7 @@ Report-only mode suppresses intentional source and project-configuration edits. 
 
 Only the literal token `--report` enables report-only mode. Natural-language phrases ("preview", "dry run", "rehearse") are scope input or step keywords, not mode triggers. A skill that conflates them is wrong.
 
-Command suffixes reinforce the default. The family follows a noun-first `<target>-<verb>` pattern, so the trailing verb signals behavior. Skills with suffix `-fix`, `-new`, `-test`, `-upgrade` (verbs that imply action) mutate by default. In this package they are `/cljd-fix`, `/cljd-new`, `/cljd-test`, and `/cljd-upgrade`. Skills with suffix `-review` (a reading verb) are pure-report, and this package has none.
+Command suffixes reinforce the default. The family follows a noun-first `<target>-<verb>` pattern, so the trailing verb signals behavior. Skills with suffix `-fix`, `-new`, `-test`, `-upgrade` (verbs that imply action) mutate by default. In this package they are `/cljd-fix`, `/cljd-test`, and `/cljd-upgrade`. Skills with suffix `-review` (a reading verb) are pure-report, and this package has none.
 
 ### Rule 4: vendored and generated paths are excluded by default
 
@@ -67,7 +67,7 @@ The boundary statement: Rule 4 applies to mutating skills that discover candidat
 
 **Reporting.** The skill includes a single "skipped N vendored or generated paths" line in its results when the filter excluded any path. Under `--report`, the skill emits the full list so the operator can audit scope.
 
-**Scope of Rule 4 in this plugin.** Applies to `/cljd-fix`, which discovers candidate files from the workspace. Exempt: `/cljd-new` is scaffolding, `/cljd-upgrade` rewrites the ClojureDart `:tag` and `:sha` in `deps.edn`, and `/cljd-test` runs the test suite (its target set is the existing test files, not workspace discovery, and the scaffolding path that writes new test files runs only after explicit operator confirmation). The `compile` step of `/cljd-fix` writes generated Dart under `lib/cljd-out/`. Build-artifact writes are out of scope for Rule 4 because the rule governs source mutation, not compiler outputs.
+**Scope of Rule 4 in this plugin.** Applies to `/cljd-fix`, which discovers candidate files from the workspace. Exempt: `/cljd-upgrade` rewrites the ClojureDart `:tag` and `:sha` in `deps.edn`, and `/cljd-test` runs the test suite (its target set is the existing test files, not workspace discovery, and the scaffolding path that writes new test files runs only after explicit operator confirmation). The `compile` step of `/cljd-fix` writes generated Dart under `lib/cljd-out/`. Build-artifact writes are out of scope for Rule 4 because the rule governs source mutation, not compiler outputs.
 
 The file-aware mutating skills include a one-line reference to Rule 4 in their own `## Mutation` or `## Scope` section.
 
@@ -86,7 +86,6 @@ A skill is classified by its actual behavior, not by its name. If the name and b
 | Skill                  | Class           | `--report` available? | Notes |
 |------------------------|-----------------|------------------------|-------|
 | `/cljd-fix`           | Mutating        | Yes                    | `format` step runs `cljfmt fix` by default. `--report` swaps it for `cljfmt check`. `lint`, `compile`, and `dry` are pure-read regardless. |
-| `/cljd-new`            | Mutating        | No                     | Scaffolds the project tree. Preview the side effects by reading `SKILL.md`. |
 | `/cljd-test`           | Mutating        | No                     | Runs the test suite and offers to scaffold tests when none exist. Test runs rewrite generated Dart in `lib/cljd-out/` (build artifacts, not source); scaffolding writes source files only after operator confirmation. |
 | `/cljd-upgrade`        | Mutating        | Yes                    | Runs `clj -M:cljd upgrade` to move `tensegritics/clojuredart` to the latest release `:tag` and `:sha` in `deps.edn`. `--report` prints the current and latest release coordinates without writing. |
 
@@ -118,15 +117,6 @@ The section name `## Customization` is retired.
 
 The skill writes when the `format` step runs without `--report`. With `--report`, the format step runs `cljfmt check`, which reports diffs without writing. The other three steps (`lint`, `compile`, `dry`) are pure-read of source regardless. The `compile` step writes generated Dart under `lib/cljd-out/`; that is a build artifact, not a source mutation, and is unaffected by `--report`. The `## Mutation` section in the skill body documents this asymmetry.
 
-### `/cljd-new` -- mutating skill, exemption from `all`/path rows
-
-```
-/cljd-new my_app             # creates project tree at ./my_app
-/cljd-new                    # prompts the operator for a project name
-```
-
-`<project-name>` is a required positional argument. The skill omits the `all` and `<path>` rows because they would not be meaningful for scaffolding. It also omits `--report` because preview is meaningless: the operator reads `SKILL.md` to see what files will be written. The exemption is listed below.
-
 ### `/cljd-upgrade` -- mutating skill with `--report`
 
 ```
@@ -151,7 +141,7 @@ The default runs the suite. Compilation of `.cljd` to `.dart` test files is a bu
 
 ## Exemptions
 
-`/cljd-new` accepts a required positional `<project-name>` because no useful default exists for scaffolding. It omits the `all` and `<path>` scope rows and the `--report` flag for the same reason. The `## Arguments` table in its `SKILL.md` documents the positional grammar.
+No skill in this plugin claims an exemption today. The standard exemption pattern, for reference, is a scaffolding skill that accepts a required positional `<project-name>` because no useful default exists. Such a skill omits the `all` and `<path>` scope rows and the `--report` flag for the same reason, and the `## Arguments` table in its `SKILL.md` documents the positional grammar.
 
 ## Ambiguity notes
 

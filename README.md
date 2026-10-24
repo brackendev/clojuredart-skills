@@ -2,7 +2,7 @@
 
 ClojureDart development skills packaged as an [APM](https://github.com/microsoft/apm) plugin. One install deploys the full set to every runtime in APM's default target set: Claude Code, Codex, OpenCode, Cursor, Copilot, Gemini, Windsurf, Kiro, and Grok Build. Antigravity is supported by naming it explicitly with `--target antigravity`.
 
-Skills follow the [Agent Skills](https://agentskills.io) open standard. Three auto-trigger from conversation context (`clojuredart`, `clojuredart-lenses`, `clojuredart-nav`). The rest appear as slash commands. The agent can also run `/cljd-fix` and `/cljd-test` from a natural-language request. `/cljd-new` and `/cljd-upgrade` run only as typed slash commands. Runtimes differ in how they offer these commands: Codex lists them under `/skills` and runs them as `$name`, OpenCode attaches them with `@name`, and Gemini CLI does not read the user-only setting, so its agent can start any of them.
+Skills follow the [Agent Skills](https://agentskills.io) open standard. Three auto-trigger from conversation context (`clojuredart`, `clojuredart-lenses`, `clojuredart-nav`). The rest appear as slash commands. The agent can also run `/cljd-fix` and `/cljd-test` from a natural-language request. `/cljd-upgrade` runs only as a typed slash command. Runtimes differ in how they offer these commands: Codex lists them under `/skills` and runs them as `$name`, OpenCode attaches them with `@name`, and Gemini CLI does not read the user-only setting, so its agent can start any of them.
 
 This package layers on top of the host-neutral [clojure-skills](https://github.com/brackendev/clojure-skills) baseline. Install both together so the `clojure` skill handles general Clojure family style (naming, threading, collections, atoms, dispatch, formatting, namespaces, testing) and this package covers Dart interop, type hints and nullability, `cljd.flutter` directives, async, FFI, the ClojureDart socket REPL, and Flutter project layout.
 
@@ -15,7 +15,7 @@ Seven sibling APM packages. This package layers on top of [clojure-skills](https
 | [clojure-skills](https://github.com/brackendev/clojure-skills) | Host-neutral [Clojure](https://clojure.org/) family baseline: style, naming, threading, collections, atoms, dispatch, formatting, namespaces, and testing. Triggers on `.clj`, `.cljs`, `.cljc`, `.cljd`. | — |
 | [clojure-jvm-skills](https://github.com/brackendev/clojure-jvm-skills) | [Clojure](https://clojure.org/) on the JVM: Java interop, refs / agents / STM, `with-open`, JVM-typed exceptions, `alter-var-root`, and the Clojure CLI / `tools.build` / `clj-kondo` / `cljfmt` / `test-runner` / nREPL workflow. | `clojure-skills` |
 | [clojurescript-skills](https://github.com/brackendev/clojurescript-skills) | [ClojureScript](https://clojurescript.org/) style and tooling: JavaScript interop, externs inference, macro stage separation, `catch :default`, JS-flavored numbers and truthiness, and the `cljs.main` workflow. Triggers on `.cljs`, `.cljc` compiled to JS, `shadow-cljs.edn`, `figwheel-main.edn`. | `clojure-skills` |
-| [biff-skills](https://github.com/brackendev/biff-skills) | [Biff](https://biffweb.com/) 2 web framework on the JVM: scaffolding, conventions, deployment. | `clojure-skills` + `clojure-jvm-skills` |
+| [biff-skills](https://github.com/brackendev/biff-skills) | [Biff](https://biffweb.com/) 2 web framework on the JVM: conventions and deployment. | `clojure-skills` + `clojure-jvm-skills` |
 | [electric-skills](https://github.com/brackendev/electric-skills) | [Electric](https://github.com/hyperfiddle/electric) v3 full-stack reactive framework: `e/defn` components, `e/client` / `e/server` site transfer, `e/for` over `e/diff-by`, `e/watch` state, `e/Token` transactions, `e/Offload`, the `electric-dom3` and `electric-forms5` APIs, and the single-JVM shadow-cljs workflow. Triggers on `hyperfiddle.electric3`, `hyperfiddle.electric-dom3`, `e/defn`, `e/client`, `e/server`, and `com.hyperfiddle/electric`. | `clojure-skills` + `clojurescript-skills` + `clojure-jvm-skills` |
 | [fulcro-skills](https://github.com/brackendev/fulcro-skills) | [Fulcro](https://github.com/fulcrologic/fulcro) 3 full-stack framework: `defsc` components, idents and the normalized client database, mutations, `df/load!`, dynamic routing, forms, UI state machines, Fulcro Inspect, and the Pathom 3 server. Triggers on `com.fulcrologic.fulcro.*`, `com.fulcrologic.rad.*`, `com.wsscode.pathom3.*`, `defsc`, `defmutation`, `defrouter`, `df/load!`, and ident vectors. | `clojure-skills` + `clojurescript-skills` + `clojure-jvm-skills` |
 | [clojuredart-skills](https://github.com/brackendev/clojuredart-skills) (this package) | [ClojureDart](https://github.com/Tensegritics/ClojureDart) on [Flutter](https://flutter.dev/): Dart interop, type hints, `cljd.flutter` directives, async, FFI, REPL, and the Flutter project workflow. Triggers on `.cljd`, `cljd.flutter`. | `clojure-skills` |
@@ -42,7 +42,7 @@ Update later with `apm update [-g]`. Remove with `apm uninstall brackendev/cloju
 
 - [Flutter SDK](https://docs.flutter.dev/get-started/install) and [ClojureDart](https://github.com/Tensegritics/ClojureDart) for any skill in this package.
 - [clojure-skills](https://github.com/brackendev/clojure-skills) installed alongside, for the host-neutral baseline.
-- The `cljd-fix` dry step requires a [dry4clj](https://github.com/unclebob/dry4clj) `:dry4clj` alias in `deps.edn`. dry4clj is not published to Clojars, so the alias uses a Git coordinate, as in the `/cljd-new` scaffold. Without the alias, the dry step reports that it was skipped and shows the alias to add.
+- The `cljd-fix` dry step requires a [dry4clj](https://github.com/unclebob/dry4clj) `:dry4clj` alias in `deps.edn`. dry4clj is not published to Clojars, so the alias uses a Git coordinate. Without the alias, the dry step reports that it was skipped and shows the alias to add.
 
 ## Command guide
 
@@ -50,7 +50,6 @@ A quick guide to every slash command. The detailed entries under [Skills](#skill
 
 | Command | Use it when | What it does |
 |---------|-------------------|--------------|
-| `/cljd-new` | Starting a new ClojureDart Flutter project | Scaffolds the project with clj-kondo lint setup |
 | `/cljd-fix` | Lint, format, or compilation needs attention | Runs the fix pipeline, rewriting `.cljd` files in the format step with `cljfmt fix` |
 | `/cljd-test` | Running ClojureDart tests | Runs `cljd.test` suites and offers to scaffold tests when none exist |
 | `/cljd-upgrade` | ClojureDart is behind the latest release | Moves `tensegritics/clojuredart` to the latest release tag and SHA and verifies with a compile |
@@ -59,15 +58,7 @@ A quick guide to every slash command. The detailed entries under [Skills](#skill
 
 User-invocable skills share an argument grammar, scope vocabulary, and mutation default. See [CONVENTIONS.md](CONVENTIONS.md) for the full standard. In short: skills accept natural-language keywords and bare paths; the single sanctioned flag is `--report`; mutating skills apply changes by default.
 
-### Scaffolding and quality
-
-#### `/cljd-new <project-name>`
-
-Scaffold a new ClojureDart Flutter project pinned to the latest ClojureDart release, including clj-kondo lint setup and a cljfmt configuration that formats `.cljd` files.
-
-```bash
-/cljd-new my_app
-```
+### Quality and testing
 
 #### `/cljd-fix [lint|format|compile|dry] [--report] [all]`
 
