@@ -3,7 +3,7 @@ name: clojuredart
 description: >-
   Use when writing, editing, reviewing, or discussing ClojureDart code. Triggers:
   .cljd files, deps.edn with tensegritics/clojuredart, cljd-out/ directories,
-  Flutter integration, REPL usage (socket REPL on port printed by `clj -M:cljd
+  Flutter integration, REPL usage (socket REPL on port printed by `clojure -M:cljd
   flutter`), or any mention of ClojureDart. Covers syntax, Dart interop, widget
   macros, project structure, compilation, REPL-driven development, and common
   anti-patterns.
@@ -26,10 +26,10 @@ These rules prevent lost work and runtime failures in ClojureDart. The `clojure`
 
 ## Key Rules
 
-1. **Use `clj -M:cljd flutter` during development.** It watches for changes and hot reloads.
-2. **Use `clj -M:cljd compile` for deployment.** AOT compilation only.
-3. **Exclude `lib/cljd-out/` from Dart analysis.** Add to `analysis_options.yaml` under `analyzer > exclude`.
-4. **Use `^:export` for functions called from Dart.** Without it, the function is not visible to Dart code.
+1. **Use `clojure -M:cljd flutter` during development.** It watches for changes and hot reloads.
+2. **Use `clojure -M:cljd compile` for deployment.** AOT compilation only.
+3. **Exclude `lib/cljd-out/` from Dart analysis.** Add `lib/cljd-out/**` to `analysis_options.yaml` under `analyzer > exclude`, and keep the exclusion. The generated files include ClojureDart's own runtime namespaces, which `flutter analyze` and the IDE would report warnings for. The analyzer still analyzes a generated file named on the command line, so `dart analyze lib/cljd-out/my-app/screen.dart` checks that file, while `dart analyze lib/cljd-out` analyzes nothing.
+4. **End a callback with `nil` when Flutter expects a `void` function.** Write `.onPressed (fn [] (.push navigator route) nil)`. When the last expression returns a typed value such as the `Future` from `.push`, `.pushNamed`, or `m/showDialog`, `clojure -M:cljd compile` succeeds, but the Dart compiler stops `flutter build` and `flutter run` with `Can't return a value from a void function`. The Dart check in `/cljd-fix` reports the same error from the analyzer as `return_of_invalid_type_from_closure`.
 5. **Use `^Type` hints for Dart interop.** Prevents dynamic warnings and enables correct Dart type generation.
 6. **No trailing dot on constructors.** Use `(Type args)`, not the Clojure JVM forms `(Type. args)` or `(new Type args)`. ClojureDart accepts both, but they are optional and idiomatic code omits them.
 7. **Use `(->Foo a b)` / `(map->Foo {...})` factories for records.** The baseline rule applies, and calling the record constructor directly, `(Foo a b nil {} -1)`, requires three extra arguments (meta, extmap, hash) that the factory functions supply automatically. Always call the factory.
@@ -43,10 +43,11 @@ The Iron Laws and Key Rules are the short form. Each reference file below holds 
 
 | When the task involves | Read |
 |------------------------|------|
-| Dart interop: properties, methods, constructors, static and extension members, type hints, nullability, parametrized types, dynamic warnings, `^:export`, destructuring Dart objects, named and optional parameters, consts, or creating classes with `reify`, `deftype`, and `defrecord` | `references/dart-interop.md` |
+| Dart interop: properties, methods, constructors, static and extension members, type hints, nullability, parametrized types, dynamic warnings, calling ClojureDart from Dart, destructuring Dart objects, named and optional parameters, consts, or creating classes with `reify`, `deftype`, and `defrecord` | `references/dart-interop.md` |
 | `await`, async functions, streams, or isolates | `references/async.md` |
 | Flutter widgets with `cljd.flutter`: `f/run`, `f/build`, `f/widget`, directives, cells, and watches | `references/flutter.md` |
-| Evaluating code in the ClojureDart REPL or driving a running app from it | `references/repl.md` |
+| Evaluating code in the ClojureDart REPL (beta upstream) or driving a running app from it | `references/repl.md` |
+| Exceptions and catch types, `thrown?` in `cljd.test`, `with-open` and resource cleanup, or `M`, `N`, and ratio literals and money | `references/errors-and-resources.md` |
 | Namespace conventions, entry points, adding Dart packages, platform channels and FFI, or conditional reading | `references/project-structure.md` |
 | CLI commands, project layout, `deps.edn`, new project setup, clj-kondo setup, or tooling | `references/project-workflows.md` |
 
@@ -75,12 +76,11 @@ ClojureDart prints every dynamic warning in one format, `DYNAMIC WARNING: can't 
 
 ### Flutter Web
 
-- `HashMap` keyword access can return `null` in release builds on Flutter Web. If you encounter nil values that work in debug mode, check whether the data flows through Dart HashMap boundaries.
-- Type cast errors in release builds that do not appear in debug mode are typically caused by Dart's tree-shaking removing type information. Add explicit type hints at the boundary where data crosses from Dart to ClojureDart.
-- Web builds use `clj -M:cljd compile` followed by `flutter build web`. Test in release mode (`flutter run -d chrome --release`) before deploying.
+- Web builds use `clojure -M:cljd compile` followed by `flutter build web`.
+- Upstream issue #355 (open) reports type cast errors from keyword lookups on persistent maps in `flutter build web` release builds (dart2js and dart2wasm) that do not occur in debug or profile builds. Test the release build (`flutter run -d chrome --release`) before deploying. The reported workaround is `flutter build web --profile`.
 
 ### Common Mistakes
 
 - **`instance?` with a class that is not a literal.** Dart needs the type in an `is` check written literally. `(instance? String x)` works because it expands to `(dart/is? x String)`, but a class held in a local or var fails to compile, and `instance?` used as a function value, as in `(partial instance? String)`, throws `UnsupportedError` at runtime. Pass the class literally, or write `(dart/is? x Type)`.
-- **clj-kondo noise on `cljd.flutter/widget` or `cljd.test/deftest`.** Without the project's clj-kondo hooks and upstream exports, the linter produces hundreds of false positives on widget directives and test runners. Follow the clj-kondo setup in `references/project-workflows.md`: add the `cljd.test/deftest` hook and `.clj-kondo/config.edn`, then run `clj-kondo --copy-configs --dependencies --lint "$(clj -Spath)"`.
+- **clj-kondo noise on `cljd.flutter/widget` or `cljd.test/deftest`.** Without the project's clj-kondo hooks and upstream exports, the linter produces hundreds of false positives on widget directives and test runners. Follow the clj-kondo setup in `references/project-workflows.md`: add the `cljd.test/deftest` hook and `.clj-kondo/config.edn`, then run `clj-kondo --copy-configs --dependencies --lint "$(clojure -Spath)"`.
 - **clj-kondo does not understand `:summon` yet.** The upstream hooks (as of ClojureDart `0.9.20261002`) do not handle the `:summon` directive, so every name it binds is reported as an unresolved symbol, even though the code compiles. Until upstream adds hook support, either keep `:get` in linted code or accept the findings for `:summon` forms.

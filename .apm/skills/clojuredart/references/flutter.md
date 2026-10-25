@@ -109,9 +109,12 @@ Options:
 
 ;; :> -- extract value from notifier-style watchables
 :watch [v some-notifier :> .-value]
+
+;; :value> -- transform each produced value before dedup and destructuring
+:watch [{:keys [username]} app-state :value> normalize-user]
 ```
 
-Deduplication: `:watch` only triggers rebuild when bound values change (by `=`). Scoped Watches below shows how destructuring narrows rebuilds.
+Deduplication: `:watch` only triggers rebuild when bound values change (by `=`). `:dedup false` rebuilds on every change. Scoped Watches below shows how destructuring narrows rebuilds.
 
 #### :managed (lifecycle management)
 
@@ -143,7 +146,9 @@ Dynamic binding along the widget tree (inherited widgets):
 (f/widget
   :get [m/Navigator]
   ;; navigator is bound (auto kebab-cased from Navigator)
-  (.push navigator some-route))
+  (m/TextButton
+    .onPressed (fn [] (.push navigator some-route) nil)
+    .child (m/Text "Open")))
 
 ;; Map form -- combines framework objects, :value-of, and destructuring
 (f/widget
@@ -185,11 +190,11 @@ A class name that already ends in `.of` or `.<name>Of` (for example, `m/Navigato
 
 Supported options are `:as` (bind the raw right-hand side value) and `:>` or `:value>` (equivalent: transform the value before binding or destructuring). `:summon` does not support `:default`, `:refresh-on`, `:dedup`, or disposal options; use `:watch` or `:managed` for those.
 
-When the binding position is a keyword, `:of` and `:keys` are shorthand:
+When the binding position is a keyword, `:of` and `:keys` are shorthand. Give each shorthand its own `:summon` directive. In one vector, a keyword after the first shorthand's value reads as an option, and the compile fails with `Unsupported option: :keys`:
 
 ```clojure
-:summon [:of [m/checkbox-theme]
-         :keys [data/user]]
+:summon [:of [m/checkbox-theme]]
+:summon [:keys [data/user]]
 
 ;; is equivalent to:
 :summon [checkbox-theme m/CheckboxTheme
@@ -214,6 +219,7 @@ Runs side effects when a watchable changes without triggering widget rebuild:
 
 ```clojure
 (f/widget
+  :vsync vsync
   :managed [animator (m/AnimationController .vsync vsync)]
   :watch [{:keys [alignment animation]} state]
   :bg-watcher ([animated-value animation]
@@ -244,12 +250,24 @@ Wraps its value in a `ValueKey` for identifying sibling widgets:
 
 #### :when
 
-Conditionally shows the rest of the widget:
+Conditionally shows the rest of the widget. When the test is falsy, an empty `m/SizedBox.shrink` takes its place:
 
 ```clojure
 (f/widget
   :when show?
   (m/Text "Visible"))
+```
+
+#### :bypass
+
+Returns its value instead of the rest of the widget when the value is neither `nil` nor `false`. Use it for loading, empty, and placeholder states so the rest of the body stays on the main path:
+
+```clojure
+(f/widget
+  :watch [result some-future]
+  :bypass (when-not result
+            (m/CircularProgressIndicator))
+  (m/Text (str result)))
 ```
 
 #### :height, :width, :color
@@ -271,6 +289,8 @@ Shorthand for `SizedBox` and `ColoredBox`:
 :padding {:horizontal 8 :vertical 4}  ;; EdgeInsets.symmetric
 :padding {:top 8 :bottom 16}          ;; EdgeInsets.only
 ```
+
+Map keys are `:top`, `:bottom`, `:left`, `:right`, `:start`, `:end`, `:horizontal`, and `:vertical`.
 
 ### Cells (Derived State)
 
@@ -296,10 +316,13 @@ Cells can depend on other cells and atoms. The dependency graph updates automati
 Share cells via `:bind`/`:get` rather than passing as function arguments:
 
 ```clojure
-;; Root: bind the atom and derived cells
+;; Root: bind the atom and the derived cell
+(def cart (atom []))
+(def cart-total (f/$ (reduce + (map :price (f/<! cart)))))
+
 (f/widget
-  :bind {:cart (atom [])
-         :cart-total (f/$ (reduce + (map :price (f/<! (:cart %)))))}
+  :bind {:cart cart
+         :cart-total cart-total}
   (shop-screen))
 
 ;; Consumer: get the derived cell
@@ -356,4 +379,5 @@ For even finer control, use cells to pre-compute the exact value a widget needs:
 | Derived value that recomputes when dependencies change | `f/$` cell with `f/<!` |
 | Dart controller with lifecycle (dispose) | `:managed` |
 | React to external async source (Future, Stream, Listenable) | `:watch` with `:default` |
+| Loading, empty, or placeholder state that skips the rest of the body | `:bypass` |
 | Side effect on state change (animation, logging, persistence) without triggering rebuild | `:bg-watcher` |

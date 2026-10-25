@@ -50,9 +50,11 @@ Navigate:
 (f/widget
   :get [m/Navigator]
   (m/ElevatedButton
-    .onPressed (fn [] (.pushNamed navigator "/detail"))
+    .onPressed (fn [] (.pushNamed navigator "/detail") nil)
     .child (m/Text "Go to Detail")))
 ```
+
+The trailing `nil` matters: `.onPressed` expects a `void` callback, and `.pushNamed` returns a `Future`, which the Dart compiler rejects as the return value (see Key Rule 4 in the `clojuredart` skill).
 
 Pass arguments:
 
@@ -119,7 +121,7 @@ Navigate with go_router:
 (f/widget
   :context ctx
   (m/ElevatedButton
-    .onPressed (fn [] (go/GoRouter.of ctx .go "/detail/42"))
+    .onPressed (fn [] (.go (go/GoRouter.of ctx) "/detail/42"))
     .child (m/Text "Go to Detail")))
 
 ;; Or use the extension method
@@ -156,7 +158,8 @@ Direct imperative navigation for modals, dialogs, and custom transitions:
     (fn []
       (.push navigator
         (#/(m/MaterialPageRoute Object)
-          .builder (f/build (detail/screen)))))
+          .builder (f/build (detail/screen))))
+      nil)
     .child (m/Text "Open Detail")))
 
 ;; Pop back
@@ -182,25 +185,29 @@ Direct imperative navigation for modals, dialogs, and custom transitions:
 ### Dialogs and Bottom Sheets
 
 ```clojure
-;; Show dialog
+;; Show dialog and wait for the value passed to .pop
 (f/widget
   :context ctx
   (m/ElevatedButton
     .onPressed
     (fn []
-      (m/showDialog
-        .context ctx
-        .builder (f/build
-                   (m/AlertDialog
-                     .title (m/Text "Confirm")
-                     .content (m/Text "Proceed?")
-                     .actions
-                     [(m/TextButton
-                        .onPressed (fn [] (m/Navigator.of ctx .pop false))
-                        .child (m/Text "Cancel"))
-                      (m/TextButton
-                        .onPressed (fn [] (m/Navigator.of ctx .pop true))
-                        .child (m/Text "OK"))]))))
+      (let [confirmed (await
+                        (#/(m/showDialog bool)
+                          .context ctx
+                          .builder (f/build
+                                     :get [m/Navigator]
+                                     (m/AlertDialog
+                                       .title (m/Text "Confirm")
+                                       .content (m/Text "Proceed?")
+                                       .actions
+                                       [(m/TextButton
+                                          .onPressed (fn [] (.pop navigator false))
+                                          .child (m/Text "Cancel"))
+                                        (m/TextButton
+                                          .onPressed (fn [] (.pop navigator true))
+                                          .child (m/Text "OK"))]))))]
+        (when confirmed
+          (proceed!))))
     .child (m/Text "Show Dialog")))
 
 ;; Show bottom sheet
@@ -214,7 +221,8 @@ Direct imperative navigation for modals, dialogs, and custom transitions:
         .builder (f/build
                    (m/Container
                      .padding (m/EdgeInsets.all 16)
-                     .child (m/Text "Bottom Sheet Content")))))
+                     .child (m/Text "Bottom Sheet Content"))))
+      nil)
     .child (m/Text "Show Sheet")))
 ```
 
@@ -262,7 +270,7 @@ Direct imperative navigation for modals, dialogs, and custom transitions:
 
 - `go_router` requires `MaterialApp.router` with `.routerConfig`, not regular `MaterialApp` with `.routes`. These are mutually exclusive.
 - `f/build` in route builders receives the route state as a parameter. Type-hint it as `^go/GoRouterState` to access `.pathParameters` and `.queryParameters` without dynamic warnings.
-- `Navigator.of(context)` in ClojureDart is `(m/Navigator.of ctx)`. The `:get [m/Navigator]` directive is a cleaner alternative that avoids passing context manually.
-- When using `:get [m/Navigator]` inside a dialog or bottom sheet, the navigator refers to the dialog's navigator scope, not the parent. Use `(m/Navigator.of ctx .rootNavigator true)` to reach the root navigator.
+- `Navigator.of(context)` in ClojureDart is `(m/Navigator.of ctx)`, and `Navigator.of(context).pop()` is `(.pop (m/Navigator.of ctx))`. A dotted name after the context passes a named argument to `.of`, so `(m/Navigator.of ctx .pop false)` fails to compile with `Not an expected argument name: .pop`. The same applies to `(go/GoRouter.of ctx)`. The `:get [m/Navigator]` directive is a cleaner alternative that avoids passing context manually.
+- `:get [m/Navigator]` and `Navigator.of` return the closest navigator above the widget. `m/showDialog` pushes its route on the root navigator by default (`.useRootNavigator true`), and `m/showModalBottomSheet` pushes on the closest one (`.useRootNavigator false`). Take the navigator inside the dialog or sheet builder, as in the example above, so `.pop` closes the dialog. With nested navigators (a go_router `ShellRoute`, for example), a navigator taken from the page that opened a dialog is a different one, and the Flutter `showDialog` docs close the dialog with the root navigator instead: `(.pop (m/Navigator.of ctx .rootNavigator true) result)`.
 - Named route arguments are dynamic (untyped). Type-hint or validate after extraction to avoid dynamic warnings downstream.
 - `go_router` extension methods like `.go` and `.push` require explicit qualification: `(-> ctx go/GoRouterHelper (.go "/path"))`.

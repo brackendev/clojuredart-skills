@@ -63,6 +63,8 @@ m/Colors.red
 m/TextOverflow.fade
 ```
 
+`(ClassName/member ...)` names the class without an alias, as with `DateTime` from `dart:core`. For a class from an aliased library, write the dot form, `m/Colors.red` or `(m/Navigator.of ctx)`, or join the alias and the class, `m.Colors/pink`. The ClojureDart book calls the dot form the modern style.
+
 ### Extension Methods
 
 Extension methods require explicit qualification with the extension type:
@@ -124,12 +126,9 @@ Fix dynamic warnings immediately, starting with the first one, because one unres
   {:no-dynamic true})
 ```
 
-## Visibility and Export
+## Calling ClojureDart from Dart
 
-```clojure
-(defn ^:export my-function [args] ...)  ;; Dart-visible
-(defn- helper-function [args] ...)      ;; Namespace-private
-```
+ClojureDart has no `^:export`. Every `defn`, including `defn-`, compiles to a public top-level Dart function in the namespace's generated library, with a munged name and `dynamic` parameters: `(defn my-function [x] ...)` in `my-app.utils` becomes `dynamic my_function(dynamic x)` in `lib/cljd-out/my-app/utils.dart`. Dart code imports that library through the app's package name, for example `import 'package:cljd_my_app/cljd-out/my-app/utils.dart';` (see Namespace Conventions in `references/project-structure.md` for the package name). `defn-` does not hide the function from Dart.
 
 ## Object Destructuring
 
@@ -170,7 +169,7 @@ Use `.paramName` for Dart named parameters in function definitions:
 
 ```clojure
 [a b c .d .e]         ;; 3 positional, 2 optional named (d, e)
-[.a 42 .e]            ;; 2 named: a defaults to 42, e is required
+[.a 42 .e]            ;; 2 optional named: a defaults to 42, e has no default
 ```
 
 ### Optional Positional Parameters
@@ -236,20 +235,20 @@ Note: `(.- obj)` with one argument is property access. `(.- a b)` with two argum
 
 ### Getters and Setters
 
-Defined as methods in `reify`/`deftype`/`defrecord`. A getter takes `[this]`, a setter takes `[this v]`. New properties need `^:getter` or `^:setter` tags:
+Defined as methods in `reify`/`deftype`/`defrecord`. A getter takes `[this]`, a setter takes `[this v]`. New properties need `^:getter` or `^:setter` tags. A `deftype` field that `set!` changes needs `^:mutable`:
 
 ```clojure
-(deftype MyType [^:mut _value]
+(deftype MyType [^:mutable _value]
   (^:getter value [this] _value)
   (^:setter value [this v] (set! _value v)))
 ```
 
 ## Imperative Dart Object Setup
 
-Use `doto` with `set!` to configure mutable Dart objects:
+Use `doto` with the `.-prop!` setter form, which the ClojureDart book names the preferred idiom because it fits `doto`:
 
 ```clojure
 (doto (m/Paint)
-  (-> .-color (set! m/Colors.grey))
-  (-> .-style (set! m/PaintingStyle.fill)))
+  (.-color! m/Colors.grey)
+  (.-style! m/PaintingStyle.fill))
 ```

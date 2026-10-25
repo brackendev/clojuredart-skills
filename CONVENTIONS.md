@@ -85,9 +85,9 @@ A skill is classified by its actual behavior, not by its name. If the name and b
 
 | Skill                  | Class           | `--report` available? | Notes |
 |------------------------|-----------------|------------------------|-------|
-| `/cljd-fix`           | Mutating        | Yes                    | `format` step runs `cljfmt fix` by default. `--report` swaps it for `cljfmt check`. `lint`, `compile`, and `dry` are pure-read regardless. |
-| `/cljd-test`           | Mutating        | No                     | Runs the test suite and offers to scaffold tests when none exist. Test runs rewrite generated Dart in `lib/cljd-out/` (build artifacts, not source); scaffolding writes source files only after operator confirmation. |
-| `/cljd-upgrade`        | Mutating        | Yes                    | Runs `clj -M:cljd upgrade` to move `tensegritics/clojuredart` to the latest release `:tag` and `:sha` in `deps.edn`. `--report` prints the current and latest release coordinates without writing. |
+| `/cljd-fix`           | Mutating        | Yes                    | `format` step runs `cljfmt fix` by default through the first cljfmt runner the project has. `--report` replaces it with `cljfmt check`. `lint`, `compile`, and `dry` are pure-read regardless. The `compile` step also runs `dart analyze` on the generated Dart files that the compile wrote. |
+| `/cljd-test`           | Mutating        | No                     | Runs the test suite and offers to scaffold tests when none exist. Test runs write compiled test namespaces to `test/cljd-out/` (or `integration_test/cljd-out/`) and the namespaces they require to `lib/cljd-out/`. These are build artifacts, not source. Scaffolding writes test files and the `:test` alias only after operator confirmation. |
+| `/cljd-upgrade`        | Mutating        | Yes                    | Runs `clojure -M:cljd upgrade` to move `tensegritics/clojuredart` to the latest release `:tag` and `:sha` in `deps.edn`. `--report` prints the current and latest release coordinates and the release-note changes that affect the project without writing. |
 
 The model-only reference skills (`clojuredart`, `clojuredart-lenses`, `clojuredart-nav`) have no argument surface and are not classified here.
 
@@ -115,17 +115,17 @@ The section name `## Customization` is retired.
 /cljd-fix all                # synonym for (no argument)
 ```
 
-The skill writes when the `format` step runs without `--report`. With `--report`, the format step runs `cljfmt check`, which reports diffs without writing. The other three steps (`lint`, `compile`, `dry`) are pure-read of source regardless. The `compile` step writes generated Dart under `lib/cljd-out/`; that is a build artifact, not a source mutation, and is unaffected by `--report`. The `## Mutation` section in the skill body documents this asymmetry.
+The skill writes when the `format` step runs without `--report`. With `--report`, the format step runs `cljfmt check`, which reports diffs without writing. The other three steps (`lint`, `compile`, `dry`) are pure-read of source regardless. The `compile` step writes generated Dart under `lib/cljd-out/`, which is a build artifact, not a source mutation, and is unaffected by `--report`. Its Dart check runs `dart analyze` on those files and writes nothing. The `## Mutation` section in the skill body documents this asymmetry.
 
 ### `/cljd-upgrade` -- mutating skill with `--report`
 
 ```
-/cljd-upgrade                # move deps.edn to the latest release and run clj -M:cljd compile
-/cljd-upgrade --report       # print current and latest release tag and SHA; no writes
+/cljd-upgrade                # move deps.edn to the latest release and run clojure -M:cljd compile
+/cljd-upgrade --report       # print current and latest release tag and SHA and the changes; no writes
 /cljd-upgrade all            # synonym for (no argument)
 ```
 
-The default runs `clj -M:cljd upgrade`, which rewrites `:tag` and `:sha` in `deps.edn`, and verifies with a compile. A failed compile restores the original `deps.edn`. With `--report`, the skill prints the current `:tag` and `:sha` and the latest release `:tag` and `:sha` from the release's `deps.latest.edn` asset. No writes. No compile.
+The default runs `clojure -M:cljd upgrade`, which rewrites `:tag` and `:sha` in `deps.edn`, and verifies with a compile and a `dart analyze` check of the generated Dart. A failed compile restores the original `deps.edn`. When only the Dart check fails, the skill asks before restoring it. Both modes read the GitHub release notes and commits between the current and latest release and list the changes that affect the project. With `--report`, the skill prints the current `:tag` and `:sha`, the latest release `:tag` and `:sha` from the release's `deps.latest.edn` asset, and that list. No writes. No compile.
 
 ### `/cljd-test` -- mutating skill, no `--report`
 
@@ -134,7 +134,7 @@ The default runs `clj -M:cljd upgrade`, which rewrites `:tag` and `:sha` in `dep
 /cljd-test unit              # run unit-tagged tests only
 /cljd-test widget            # run widget-tagged tests only
 /cljd-test all               # synonym for (no argument)
-/cljd-test test/my_app/x_test.cljd   # restrict to that file
+/cljd-test test/cljd-out/my-app/x-test_test.dart   # restrict to that compiled test file
 ```
 
 The default runs the suite. Compilation of `.cljd` to `.dart` test files is a build-artifact write, not source mutation. The "offer to scaffold when no tests exist" path writes source files only after operator confirmation, which is captured in the `## Mutation` section.
@@ -153,7 +153,7 @@ No skill in this plugin claims an exemption today. The standard exemption patter
 
 **Step keywords versus scope keywords.** A skill like `/cljd-fix` accepts step keywords (`lint`, `format`, `compile`, `dry`) that select work to run, and scope keywords (`all`) that widen scope. Step keywords are skill-specific and listed in the skill's own table. Scope keywords are shared and listed here. When a skill has both, the `## Arguments` table lists both with clearly distinct rows.
 
-**Tool-level flags the skill calls internally.** A skill may invoke a tool that itself uses POSIX flags (for example, `clj-kondo --lint`, `cljfmt fix`, `cljfmt check`, `curl --fail --location`, `flutter pub add --dev`). Those are tool-level flags, not skill flags, and do not count against rule 1. The skill body should disambiguate when a tool flag could be mistaken for a skill flag.
+**Tool-level flags the skill calls internally.** A skill may invoke a tool that itself uses POSIX flags (for example, `clj-kondo --lint`, `cljfmt fix`, `cljfmt check`, `dart analyze --no-fatal-warnings`, `curl --fail --location`, `flutter pub add --dev`). Those are tool-level flags, not skill flags, and do not count against rule 1. The skill body should disambiguate when a tool flag could be mistaken for a skill flag.
 
 ## Author checklist
 

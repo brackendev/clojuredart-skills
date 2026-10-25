@@ -6,6 +6,57 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.1.25] - 2026-10-25
+
+### Added
+
+- `/cljd-upgrade` reads the GitHub release notes and the commits between the project's release and the latest release, lists the changes that affect the project with the files that use them, and asks before any source edit. `--report` prints that list with the coordinates.
+- Key Rule 4 in the `clojuredart` skill: end a callback with `nil` when Flutter expects a `void` function. A callback that returns the `Future` from `.push` or `showDialog` passes `clojure -M:cljd compile` and then stops `flutter build` with `Can't return a value from a void function`. `/cljd-fix` reports such errors from its new Dart check.
+- The `cljd.flutter` reference covers the `:bypass` directive and the `:value>` and `:dedup` options of `:watch`, and `clojuredart-lenses` uses `:bypass` as the guard clause for loading and empty states.
+- The REPL reference says that upstream labels the REPL beta, names the `REPL.lock` file and the `Another ClojureDart process is running` refusal, explains that `ns` only switches to an existing namespace, and lists the `f` and `m` aliases in `cljd.user`.
+- New project setup deletes the `test/widget_test.dart` file that `flutter create` writes, which otherwise fails every `clojure -M:cljd test` run, and adds `.clj-kondo/.cache/` to `.gitignore`.
+- The clj-kondo configuration lints `cljd.test/is`, `are`, and `testing` as their `clojure.test` counterparts, accepts `thrown?` inside `is`, and accepts slash calls on `Future`, `List`, and `Stream`. The setup section lists the false positives that the upstream hooks still produce.
+- `/cljd-fix` reports the dry step as `ERROR` when dry4clj stops on a parametrized type hint such as `^#/(List String)`, and reports the compile step as `FAIL` while a `clojure -M:cljd flutter` or `watch` process holds `REPL.lock`.
+- The `clojuredart` skill has a reference for exceptions, resource cleanup, and numbers. It says that `ex-info` values are not Dart `Exception`s, so `(catch Exception e ...)` misses them and `(catch cljd.core/ExceptionInfo e ...)` catches them, that the catch-all is `(catch Object e ...)` or `(catch dynamic e ...)` and `(catch :default e ...)` does not compile, how `thrown?` and `thrown-with-msg?` work with Dart types, how `with-open` disposes values (`.dispose` by default, `:dispose .close` for others, in reverse order), and that `M`, `N`, and ratio literals compile to plain Dart numbers while `cljd.edn/read-string` rejects `0.1M`.
+- The `/cljd-fix` compile step runs `dart analyze` on the project's Dart files that the compile wrote, and the summary has a `Dart:` line. It reports errors that `flutter build` would stop on, such as a `void` callback that returns a `Future`, while warnings do not fail the step. `/cljd-upgrade` runs the same check after its compile and asks before restoring `deps.edn` when only the check fails.
+- The `/cljd-fix` format step uses the first cljfmt runner the project has: a `:cljfmt` alias, the Leiningen plugin, the `cljfmt` binary, or the cljfmt Clojure CLI tool. When none is installed, it reports `SKIPPED` and shows a `:cljfmt` alias to add.
+- `/cljd-test` says that two active aliases with different `:dart-test-args` stop the run with `Two different values provided in :cljd/opts`, and that `:extra-dart-test-args` appends to the arguments instead.
+
+### Changed
+
+- The README names the latest stable Flutter SDK and the Clojure CLI as requirements and says that upstream labels the REPL beta.
+- The Flutter Web gotcha cites upstream issue #355 for release-only type cast errors and its `flutter build web --profile` workaround.
+- The isolate example reads the ports from the `:ports` entry that `spawn!` returns and uses `.send` and `.-first`. The async reference says that a function using `await` is async without `^:async`.
+- Every command the skills run uses `clojure` instead of `clj`, including `clojure -M:cljd flutter`. The `clj` script needs `rlwrap` and exits with an error without it, and the project workflow reference says so where upstream documentation shows `clj`.
+- Tests live in `test/`, which a `:test` alias adds to the classpath, and run with `clojure -M:test:cljd test`. `/cljd-test` runs existing tests where they are, including tests next to the source in `src/`, scaffolds new tests under `test/`, and adds the `:test` alias after confirmation. It warns that without the alias the run can pass on stale compiled tests.
+- New project setup adds the `:test` alias, gives the `:cljfmt` alias `:replace-deps` so that cljfmt runs without the project's dependencies, formats `src` and `test` in `.cljfmt.edn`, and suggests ignoring `integration_test/cljd-out/`, which `clojure -M:cljd init` does not ignore and `clojure -M:cljd clean` does not delete.
+- The conditional reading guidance explains that ClojureDart reads each file in a host pass with `:clj` on and a Dart pass without it, so `:clj` goes last, and it points to the reader conditional reference in clojure-skills for the general rules.
+- Key Rule 3 keeps the `lib/cljd-out/` exclusion in `analysis_options.yaml` and says that the analyzer still checks a generated file named on the command line.
+- `/cljd-fix` reports a skipped dry step as `SKIPPED`, the same word as the summary.
+
+### Fixed
+
+- The `^:export` rule is removed. ClojureDart ignores `^:export`, and every `defn`, including `defn-`, compiles to a public Dart function.
+- App-internal Dart imports use the `cljd_`-prefixed package name that `clojure -M:cljd init` writes to `pubspec.yaml`, and the hybrid entry point imports a Dart file other than the generated `lib/main.dart`.
+- The getter and setter example marks its field `^:mutable`. `^:mut` failed to compile.
+- The FFI example passes type arguments with `#/(lookup ...)` and `#/(asFunction ...)`, writes function types as `(ArgType -> ReturnType)`, and calls `asFunction` through `ffi/NativeFunctionPointer`. The earlier form failed to compile.
+- The navigation examples close dialogs with a navigator taken in the dialog builder and call `.pop` and `.go` on the result of `Navigator.of` and `GoRouter.of`. `(m/Navigator.of ctx .pop false)` and `(go/GoRouter.of ctx .go ...)` failed to compile.
+- The `:summon` shorthand example puts `:of` and `:keys` in separate directives, because one vector fails with `Unsupported option: :keys`.
+- The cells example binds atoms and cells defined with `def`. The `(:cart %)` form outside an anonymous function failed to compile.
+- The platform view example requires `package:flutter/services.dart` for `StandardMessageCodec` and passes `creationParams` with string keys, because the codec rejects keywords.
+- `integration_test` is added with `flutter pub add "dev:integration_test:{sdk: flutter}"`. `flutter pub add --dev integration_test` fails version solving.
+- `/cljd-test` passes the compiled file to run one namespace, because `flutter test` runs every compiled test file under `test/`. It also says that `^{:runner ...}` metadata runs the body under the plain runner instead of passing without running it.
+- The REPL reference shows both banner formats, reads `*env` bindings with symbol keys such as `'counter`, and replaces the scripted `nc` pattern with one that closes the connection before its input ends. It says that a closed connection can leave the REPL unresponsive until `clojure -M:cljd flutter` restarts, and that a web target writes `REPL.lock` but prints no banner.
+- The `[.a 42 .e]` parameter example says that `e` is optional with no default.
+- The `/cljd-fix` format step accepts every cljfmt configuration file name (`.cljfmt.edn`, `.cljfmt.clj`, `cljfmt.edn`, and `cljfmt.clj`) and checks `:file-pattern` in the configuration the runner reads. It failed when `.cljfmt.edn` was missing and stopped the pipeline when `deps.edn` had no `:cljfmt` alias.
+- The `/cljd-test` path example in `CONVENTIONS.md` names a compiled Dart test file, as the skill's Arguments table does.
+- The `dart test` tag warning is quoted in both its one-tag and several-tag forms.
+
+### Removed
+
+- The Flutter Web claims that `HashMap` keyword access returns `null` and that tree shaking removes type information are removed. No upstream source supports them.
+- Notes about older dry4clj revisions and about older clj-kondo hook revisions are removed. The clj-kondo section describes the hooks in the current release and no longer suggests patching `.clj-kondo/imports/`, which `--copy-configs` overwrites.
+
 ## [0.1.24] - 2026-10-25
 
 ### Added

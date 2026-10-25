@@ -3,14 +3,16 @@
 ## CLI
 
 ```bash
-clj -M:cljd init       # Initialize a ClojureDart project (creates Flutter structure)
-clj -M:cljd flutter    # Compile, watch, and hot reload (dev mode); press RETURN to force restart
-clj -M:cljd compile    # AOT compilation (for deployment)
-clj -M:cljd compile --offline  # Compile without running `pub get` (also accepted by `watch`)
-clj -M:cljd clean      # Clean build artifacts
-clj -M:cljd upgrade    # Move deps.edn to the latest ClojureDart GitHub Release (tag + SHA)
-clj -M:cljd test       # Run tests
+clojure -M:cljd init       # Initialize a ClojureDart project (creates Flutter structure)
+clojure -M:cljd flutter    # Compile, watch, and hot reload (dev mode); press RETURN to force restart
+clojure -M:cljd compile    # AOT compilation (for deployment)
+clojure -M:cljd compile --offline  # Compile without running `pub get` (also accepted by `watch`)
+clojure -M:cljd clean      # Clean build artifacts
+clojure -M:cljd upgrade    # Move deps.edn to the latest ClojureDart GitHub Release (tag + SHA)
+clojure -M:test:cljd test  # Run tests (the :test alias adds test/ to the classpath)
 ```
+
+Upstream ClojureDart documentation writes these commands with `clj`, as in `clj -M:cljd flutter`. `clojure` runs the same commands. The `clj` script only wraps `clojure` in `rlwrap` for line editing, and without `rlwrap` it prints `Please install rlwrap for command editing or use "clojure" instead.` and exits 1. `clojure -M:cljd flutter` still reads RETURN from standard input and restarts the app.
 
 ## Project Structure
 
@@ -22,6 +24,10 @@ my-project/
     my_app/
       main.cljd          # Entry point
       feature.cljd       # Feature modules
+  test/
+    my_app/
+      feature_test.cljd  # cljd.test namespace (on the classpath through the :test alias)
+    cljd-out/            # Compiled test namespaces (generated)
   lib/
     cljd-out/            # Generated Dart (NEVER edit)
     main.dart            # Dart entry point
@@ -39,7 +45,8 @@ my-project/
               :tag     "<release-tag>"
               :sha     "<release-sha>"}}
  :aliases   {:cljd {:main-opts ["-m" "cljd.build"]}
-             :cljfmt {:extra-deps {dev.weavejester/cljfmt {:mvn/version "0.16.6"}}
+             :test {:extra-paths ["test"]}
+             :cljfmt {:replace-deps {dev.weavejester/cljfmt {:mvn/version "0.16.6"}}
                       :main-opts ["-m" "cljfmt.main"]}
              :dry4clj {:extra-deps {io.github.unclebob/dry4clj
                                     {:git/url "https://github.com/unclebob/dry4clj.git"
@@ -49,20 +56,20 @@ my-project/
              :main my-app.main}}
 ```
 
-ClojureDart releases are named `0.9.YYYYMMDD` (with an optional lowercase suffix for a second release on the same day). Each release publishes a `deps.latest.edn` asset pinned to its tag and SHA at `https://github.com/Tensegritics/ClojureDart/releases/latest/download/deps.latest.edn`. `clj -M:cljd upgrade` reads that asset and rewrites the coordinate. Pin releases rather than the `HEAD` commit. For a new project, read the coordinate under `[:deps tensegritics/clojuredart]` in that asset, and check that `:tag` matches `0.9.YYYYMMDD` (with the optional suffix) and that `:sha` is a 40-character hexadecimal SHA before writing it.
+ClojureDart releases are named `0.9.YYYYMMDD` after the UTC date, and later releases on the same UTC day add a suffix from `a` through `z` (`0.9.20260822a`). Each release publishes a `deps.latest.edn` asset pinned to its tag and SHA at `https://github.com/Tensegritics/ClojureDart/releases/latest/download/deps.latest.edn`. `clojure -M:cljd upgrade` reads that asset and rewrites the coordinate. Pin releases rather than the `HEAD` commit. For a new project, read the coordinate under `[:deps tensegritics/clojuredart]` in that asset, and check that `:tag` matches `0.9.YYYYMMDD` (with the optional suffix) and that `:sha` is a 40-character hexadecimal SHA before writing it.
 
-The `:main` namespace uses hyphens (`my-app.main`), and the source path uses underscores (`src/my_app/main.cljd`). The project name must be a valid Dart package name: lowercase, with underscores and no hyphens. `dry4clj` is not published to Clojars, so the `:dry4clj` alias uses a Git coordinate pinned to a commit that scans `.cljd` files. The `cljd-fix` duplicate-form step uses that alias.
+The `:main` namespace uses hyphens (`my-app.main`), and the source path uses underscores (`src/my_app/main.cljd`). `clojure -M:cljd init` derives the Dart package name from the directory name and adds a `cljd_` prefix (directory `my_app` becomes package `cljd_my_app`), so the directory name needs no Dart-specific form. `clojure -M:cljd test` compiles only the namespaces in the project's classpath roots, so test namespaces under `test/` need the `:test` alias, and the test command is `clojure -M:test:cljd test`. The `:cljfmt` alias uses `:replace-deps` because cljfmt reads source as text and needs none of the project's dependencies. `dry4clj` is not published to Clojars, so the `:dry4clj` alias uses a Git coordinate pinned to a commit that scans `.cljd` files. The `cljd-fix` duplicate-form step uses that alias.
 
 ## New Project Setup
 
-Create the directory and `deps.edn` above, then run `clj -M:cljd init` inside the directory. It creates the Flutter project structure (`pubspec.yaml`, `lib/`, `android/`, `ios/`, and the rest). Then complete the project-level configuration:
+Create the directory and `deps.edn` above, then run `clojure -M:cljd init` inside the directory. It runs `flutter create` for the Flutter project structure (`pubspec.yaml`, `lib/`, `android/`, `ios/`, `test/`, and the rest), writes `lib/main.dart` as an export of the `:main` namespace's `main`, and appends `.cpcache/`, `.clojuredart/`, `lib/cljd-out/`, and `test/cljd-out/` to `.gitignore`. Integration test namespaces compile to `integration_test/cljd-out/`, which `init` does not add to `.gitignore` and `clojure -M:cljd clean` does not delete. Then complete the project-level configuration:
 
 1. Add `lib/cljd-out/**` to the analyzer exclude list in `analysis_options.yaml`, keeping the existing content.
-2. Append `lib/cljd-out/` and `.cpcache/` to `.gitignore` when they are not already present.
+2. Delete `test/widget_test.dart`. `flutter create` writes it for its counter template, and it fails to compile (`Couldn't find constructor 'MyApp'`) on every `clojure -M:test:cljd test` run, because that command runs `flutter test` over the whole `test/` directory. Keep the `test/` directory for the `.cljd` test namespaces.
 3. Create `.cljfmt.edn`:
 
    ```clojure
-   {:paths ["src"]
+   {:paths ["src" "test"]
     :file-pattern #re "\\.(?:clj[csxd]?|bb)$"
     :extra-indents {cljd.flutter/widget [[:inner 0]]
                     cljd.flutter/build [[:inner 0]]
@@ -70,8 +77,8 @@ Create the directory and `deps.edn` above, then run `clj -M:cljd init` inside th
    ```
 
    cljfmt's default `:file-pattern` matches `.clj`, `.cljc`, `.cljs`, `.cljx`, and `.bb` but not `.cljd`, so without this key `cljfmt check` and `cljfmt fix` skip every ClojureDart file and still exit 0. The regular expression needs the doubled backslash because EDN strings do not accept `\.`. Use `:extra-indents`, not `:indents`, because `:indents` replaces cljfmt's default rules and misindents `let`, `when`, and other core forms.
-4. Set up clj-kondo as described in the next section.
-5. Run `clj -M:cljd flutter` to compile, watch, and hot reload. The first run downloads the ClojureDart dependencies and can take a minute.
+4. Set up clj-kondo as described in the next section, and add `.clj-kondo/.cache/` to `.gitignore`. When the project will have integration tests, add `integration_test/cljd-out/` as well.
+5. Run `clojure -M:cljd flutter` to compile, watch, and hot reload. The first run downloads the ClojureDart dependencies and can take a minute.
 
 ## clj-kondo Setup
 
@@ -124,9 +131,10 @@ Create `.clj-kondo/config.edn`:
 ;; Upstream cljd clj-kondo config is imported under
 ;; .clj-kondo/imports/tensegritics/clojuredart/ by clj-kondo --copy-configs.
 ;; Regenerate with:
-;;   clj-kondo --copy-configs --dependencies --lint "$(clj -Spath)"
+;;   clj-kondo --copy-configs --dependencies --lint "$(clojure -Spath)"
 ;;
 ;; This file layers a hook for cljd.test/deftest (upstream does not cover it),
+;; lints the other cljd.test macros as their clojure.test counterparts,
 ;; adds Dart interop exclusions, and downgrades the :flutter/widget custom
 ;; linter so drift in cljd directive names surfaces as a warning, not an error.
 
@@ -134,25 +142,41 @@ Create `.clj-kondo/config.edn`:
  {:analyze-call
   {cljd.test/deftest hooks.cljd-test/deftest}}
 
+ :lint-as
+ {cljd.test/is clojure.test/is
+  cljd.test/are clojure.test/are
+  cljd.test/testing clojure.test/testing}
+
  :linters
  {:flutter/widget {:level :warning}
 
   :unresolved-symbol
-  {:exclude [String? DateTime? int? double?]}
+  {:exclude [String? DateTime? int? double?
+             (cljd.test/is [thrown? thrown-with-msg?])]}
 
   :unresolved-namespace
-  {:exclude [Uri int double DateTime]}}}
+  {:exclude [DateTime double Future int List Stream Uri]}}}
 ```
+
+Without the `:lint-as` entries, clj-kondo reports the parameters of an `are` template as unresolved symbols. The `:unresolved-namespace` list covers the `dart:core` classes whose static members the skill's examples call with the slash form, such as `(Future/delayed ...)` and `(List/empty ...)`. clj-kondo merges these lists with the imported upstream configuration.
 
 Import the upstream exports. clj-kondo copies configurations only into an existing `.clj-kondo/` directory, which the files above create:
 
 ```bash
-clj-kondo --copy-configs --dependencies --lint "$(clj -Spath)"
+clj-kondo --copy-configs --dependencies --lint "$(clojure -Spath)"
 ```
 
-This writes `.clj-kondo/imports/tensegritics/clojuredart/`, which clj-kondo loads automatically. Commit `.clj-kondo/` to version control.
+This writes `.clj-kondo/imports/tensegritics/clojuredart/`, which clj-kondo loads automatically. Commit `.clj-kondo/` to version control except `.clj-kondo/.cache/`, as the clj-kondo README recommends.
 
-Some upstream `flutter2` hook revisions do not recognize the `:default`, `:value>`, and `:dispose-value` options to `:watch`, and some `cljd-core` hook revisions mishandle 3-form catches without a body. If clj-kondo reports `unknown keyword option to :watch` for those keywords, or false "unused binding" warnings inside a `(catch Exception e body)` with exactly three forms, patch `.clj-kondo/imports/tensegritics/clojuredart/hooks/flutter2.clj` and `cljd_core.clj`, and report the problem upstream.
+The upstream hooks in release `0.9.20261002` produce these false positives:
+
+- `unknown keyword option to :watch` for the `:default`, `:value>`, and `:dispose-value` options. The `:flutter/widget` level above keeps them warnings.
+- `Unresolved symbol` for every name that `:summon` binds (see Gotchas in `SKILL.md`).
+- `unused binding` for a `catch` whose only body form is a bare symbol, as in `(catch Exception e fallback)`, because the `try` hook reads that symbol as a stack trace binding.
+
+clj-kondo also misreads function definitions that use Dart parameter syntax (`[a b .d .e]`, `[... a 42 b]`). It reports the parameters as unused or unresolved, and calls that omit optional arguments as wrong arity. Put `#_:clj-kondo/ignore` before such a definition and before each such call instead of rewriting them.
+
+Do not patch the files under `.clj-kondo/imports/`. Running `clj-kondo --copy-configs` again overwrites them.
 
 ## Tooling
 
@@ -160,6 +184,7 @@ The ClojureDart commands are listed under CLI above. The other tools:
 
 | Tool | Command | Purpose |
 |------|---------|---------|
-| clj-kondo | `clj-kondo --lint src` | Lint `.cljd` files |
-| cljfmt | `clj -M:cljfmt fix` | Format `.cljd` files |
+| clj-kondo | `clj-kondo --lint src test` | Lint `.cljd` files |
+| cljfmt | `clojure -M:cljfmt fix` | Format `.cljd` files |
+| Dart analyzer | `dart analyze --no-fatal-warnings <generated files...>` | Check generated Dart that `flutter build` would reject (the `cljd-fix` compile step lists the files) |
 | Babashka | `bb script.bb` | Build scripts and automation |

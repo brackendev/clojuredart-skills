@@ -44,6 +44,14 @@ When the [code-lenses](https://github.com/brackendev/code-lenses) plugin is acti
 ## Tidy First
 
 - Use `:when` to guard rendering, not nested `if` blocks wrapping entire widget subtrees.
+- Use `:bypass` as the guard clause for loading, empty, and placeholder states. It returns its value when the value is neither `nil` nor `false`, and the rest of the body stays the main path:
+  ```clojure
+  (f/widget
+    :watch [result some-future]
+    :bypass (when-not result
+              (m/CircularProgressIndicator))
+    (m/Text (str result)))
+  ```
 - Use `:let` to introduce intermediate bindings inside `f/widget`:
   ```clojure
   (f/widget
