@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.1.24] - 2026-10-25
+
+### Added
+
+- The `clojuredart` skill opens with Iron Laws (CLJD-1 through CLJD-3): numbered rules that prevent lost work and runtime failures. The agent does not write code that breaks a law, and when existing code breaks one, it reports the law ID, the location, and the correct pattern, then asks before changing code outside the task. Key Rules that guarded against bugs or security holes moved into the laws, and the remaining Key Rules are renumbered.
+
+### Fixed
+
+- The Gotchas section describes the dynamic warning format ClojureDart prints, `DYNAMIC WARNING: can't resolve member ... on target type ...`, and tells inference failures from resolution failures by the target type. The Dart interop reference shows `{:no-dynamic true}` and the nil rules for `^Type` and `^Type?`.
+
 ## [0.1.23] - 2026-10-25
 
 ### Changed

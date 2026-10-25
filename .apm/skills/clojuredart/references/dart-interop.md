@@ -36,7 +36,7 @@ m/Colors.purple.shade900
 
 ### Constructors
 
-ClojureDart constructors omit the trailing dot and `new` (both are accepted but optional, see Key Rule 8 in `SKILL.md`). Classes in function position call the default constructor:
+ClojureDart constructors omit the trailing dot and `new` (both are accepted but optional, see Key Rule 6 in `SKILL.md`). Classes in function position call the default constructor:
 
 ```clojure
 ;; Default constructor: class in function position
@@ -88,7 +88,7 @@ Extension methods require explicit qualification with the extension type:
 
 ### Nullability
 
-`^String` means the value cannot be nil. Use `^String?` to allow nil:
+`^String` means the value cannot be nil, which differs from JVM Clojure, where a hinted value can still be nil (Iron Law CLJD-3). Passing nil to a `^String` parameter compiles without a warning and throws a type error at runtime. Use `^String?` to allow nil:
 
 ```clojure
 (defn greet [^String name]    ...)   ;; name is never nil
@@ -116,7 +116,13 @@ Dynamic warnings are similar to reflection warnings in Clojure but more serious.
 - Are slower
 - Can fail at runtime because arguments are not properly cast
 
-Fix dynamic warnings immediately, starting with the first one, because one unresolved type propagates to downstream calls. Type hints fix inference failures. A resolution failure (`can't resolve member`) needs a corrected member name or target type instead. The Gotchas section of `SKILL.md` describes both.
+Fix dynamic warnings immediately, starting with the first one, because one unresolved type propagates to downstream calls. Every warning reads `DYNAMIC WARNING: can't resolve member <name> on target type <type> of library <library>`. When the target type is `dynamic`, a type hint fixes it. When the target type is a real type, the member name or the target's type is wrong. The Gotchas section of `SKILL.md` describes both. To make a namespace's warnings compile errors (Iron Law CLJD-2), add `:no-dynamic true` to its attribute map:
+
+```clojure
+(ns my.app.core
+  "No dynamic calls allowed here."
+  {:no-dynamic true})
+```
 
 ## Visibility and Export
 
