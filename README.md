@@ -44,6 +44,7 @@ Update later with `apm update [-g]`. Remove with `apm uninstall brackendev/cloju
 - [clojure-skills](https://github.com/brackendev/clojure-skills) installed alongside, for the host-neutral baseline.
 - The `cljd-fix` format step uses [cljfmt](https://github.com/weavejester/cljfmt) through a `:cljfmt` alias in `deps.edn`, the Leiningen plugin, the `cljfmt` binary, or the cljfmt Clojure CLI tool. Without any of them, the format step reports that it was skipped and shows the alias to add.
 - The `cljd-fix` dry step requires a [dry4clj](https://github.com/unclebob/dry4clj) `:dry4clj` alias in `deps.edn`. dry4clj is not published to Clojars, so the alias uses a Git coordinate. Without the alias, the dry step reports that it was skipped and shows the alias to add.
+- [Babashka](https://babashka.org) (`bb`) to run the `cljd-rules` hook. Without it, the hook does nothing and prints a notice on standard error.
 
 ## Command guide
 
@@ -98,6 +99,16 @@ These skills activate from conversation context. They cannot be invoked directly
 | **clojuredart** | `.cljd` files, `deps.edn` with `tensegritics/clojuredart`, `cljd-out/` directories, Flutter integration, ClojureDart REPL usage. Covers syntax, Dart interop, widget macros, exceptions and resource cleanup, project structure, compilation, REPL-driven development, the defrecord factory rule, and the absence of `with-redefs`. Defers to the [clojure](https://github.com/brackendev/clojure-skills) baseline for general style. The skill opens with Iron Laws (CLJD-1 through CLJD-3), rules that prevent lost work and runtime failures. The agent does not write code that breaks them, and it reports a violation it finds in existing code before changing it. |
 | **clojuredart-lenses** | Auto-triggers alongside the [code-lenses](https://github.com/brackendev/code-lenses) plugin in ClojureDart work. Layers on top of `clojure-lenses` and records only the Flutter-specific deltas. Covers the four default code-lenses philosophies (grug, Honest Code, Tidy First, Parse Don't Validate) and the two opt-in philosophies (APOSD, Legacy Code) that activate when their lens is added with `+aposd` or `+legacy-code` or invoked directly. |
 | **clojuredart-nav** | ClojureDart navigation discussions: named routes, `go_router`, the `Navigator` API, tab navigation, and deep linking in Flutter. |
+
+## Hooks
+
+The package includes one hook, `cljd-rules`.
+
+### `cljd-rules`
+
+Agents seldom load an auto-triggered skill on their own, so this hook gives the agent the CLJD-1 through CLJD-3 Iron Laws of the `clojuredart` skill as text. In a `deps.edn` that names `tensegritics/clojuredart`, it puts the condensed laws into the agent's context when a session starts, and again after `/clear` or a compaction, with an instruction to load the `clojuredart` skill along with the `clojure` skill. When the session starts outside such a project, for example in a parent directory, the hook delivers the laws on the first edit of a `.cljd`, `.cljc`, or `.edn` file in a matching project instead, once per session. The hook never edits a file. Without Babashka it does nothing and prints a notice on standard error.
+
+The hook has been run only under Claude Code, where it registers `SessionStart` and `PostToolUse`. The package ships empty Copilot and Cursor hook files, so APM writes no Copilot hook and no native Cursor hook. APM also installs the generic copy for Codex, Gemini CLI, Kiro, and Windsurf, where its effect has not been tested. OpenCode and Grok Build have no hook support.
 
 ## Contributing
 
