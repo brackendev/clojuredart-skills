@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.1.28] - 2026-10-31
+
+### Changed
+
+- The Honest Code section of `clojuredart-lenses` cites the Honest Code Principles by number (P01-P25), which the code-lenses `honest-code` skill now follows, instead of the construct names code-lenses no longer uses. It states that the browser principles (P05, P06, P22) do not apply to a Flutter app unless the review covers a Flutter web interface.
+
 ## [0.1.27] - 2026-10-29
 
 ### Added

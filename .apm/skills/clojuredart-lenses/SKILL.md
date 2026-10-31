@@ -94,8 +94,10 @@ When the [code-lenses](https://github.com/brackendev/code-lenses) plugin is acti
 
 ## Honest Code
 
-- Widget configuration is data. Named parameters to Dart constructors are key-value pairs; keep widget builders honest by passing data, not by constructing widgets through side effects. Flutter Widget instances themselves are ephemeral render objects, not state; keep app state in atoms holding maps.
-- `:watch` makes dependencies declared rather than hidden:
+Cite principles by number, as `clojure-lenses` describes. A Flutter app is not a browser interface, so P05, P06, and P22 do not apply unless the project targets Flutter web and the review covers that interface. ClojureDart adds these translations:
+
+- **P02 (Pure Functions Over Methods):** Widget configuration is data. Named parameters to Dart constructors are key-value pairs, so keep widget builders honest by passing data, not by constructing widgets through side effects. Flutter Widget instances are short-lived render objects, not state, so keep app state in atoms holding maps.
+- **P03 and P18 (Logging Is a Declared Boundary):** `:watch` declares a widget's dependencies instead of hiding them. Output written during a build, such as the `println` below, is I/O in the middle of rendering and a log line that the build's result does not show:
   ```clojure
   ;; Honest: dependency declared via :watch
   (f/widget
@@ -107,8 +109,8 @@ When the [code-lenses](https://github.com/brackendev/code-lenses) plugin is acti
     :let [_ (println "building")]  ;; side effect during build
     (m/Text "hello"))
   ```
-- One atom per piece of state. Cells (`f/$`) derive from atoms; they do not own state. `:bind` and `:get` share state through the widget tree without duplicating it. If two widgets need the same data, share via `:bind` at a common ancestor.
-- `f/widget` child threading is flat composition by design. Expressions chain through `.child` sequentially. Dotted symbols (`.home`, `.body`) redirect the chain. Avoid deeply nested widget constructors:
+- **One copy of each piece of state:** Keep one atom per piece of state. Cells (`f/$`) derive from atoms and do not own state. `:bind` and `:get` share state through the widget tree without duplicating it, so if two widgets need the same data, share it with `:bind` at a common ancestor. A duplicate is a second copy that can disagree, the defect that P09 names for caches.
+- **P04 (Composition Over Inheritance):** `f/widget` child threading is flat composition by design. Expressions chain through `.child` in sequence, and dotted symbols (`.home`, `.body`) redirect the chain. Avoid deeply nested widget constructors:
   ```clojure
   ;; Flat (honest)
   (f/widget
@@ -120,8 +122,8 @@ When the [code-lenses](https://github.com/brackendev/code-lenses) plugin is acti
   ;; Deep (dishonest equivalent)
   (m/Scaffold .body (m/Center .child (m/Text "hello")))
   ```
-- Let It Crash, ClojureDart edition: do not catch errors inside widget build paths. Let Flutter's error handling surface them (the red error screen during development). For production, wrap error-prone operations (HTTP, file I/O, platform channels) at the boundary and update state to an error variant.
-- Directives are declarations: `:watch` declares a reactive dependency; `:managed` declares lifecycle ownership; `:bind` declares a shared binding; `:when` declares conditional rendering. Prefer directives over imperative state management code:
+- **P08 and P24:** Do not catch errors inside widget build paths. Let Flutter's error handling surface them (the red error screen during development). For production, wrap error-prone operations (HTTP, file I/O, platform channels) at the boundary and update state to an error variant, a value that names the outcome.
+- **P12 (Context Managers Over Instance State) and declarations:** `:managed` declares lifecycle ownership, so the resource opens and closes with the widget's scope instead of living in instance state. `:watch` declares a reactive dependency, `:bind` declares a shared binding, and `:when` declares conditional rendering. Prefer directives over imperative state management code:
   ```clojure
   ;; Declarative (honest)
   (f/widget
