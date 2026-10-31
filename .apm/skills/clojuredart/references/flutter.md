@@ -369,6 +369,10 @@ For even finer control, use cells to pre-compute the exact value a widget needs:
 
 `f/widget` evaluates to a `Widget` instance. `f/build` evaluates to a function that returns a `Widget`. Flutter APIs that accept `builder:`, `itemBuilder:`, or route builder parameters expect functions, not widgets.
 
+### Side Effects Outside the Build
+
+Flutter can call a widget's build function many times, so the body of `f/widget` and its `:let` bindings may run on every rebuild. Keep them free of side effects: no network calls, file or storage writes, `swap!`, or logging. Put effects in `:bg-watcher` (react to a change), `:managed` (create and dispose a resource), or an event callback such as `.onPressed`.
+
 ### Choosing Directives
 
 | Need | Use |

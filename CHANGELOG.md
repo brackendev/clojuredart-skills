@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.1.29] - 2026-10-31
+
+### Removed
+
+- The `clojuredart-lenses` skill. The code-lenses package now detects the stack of the code under review and applies each lens to it through general rules, so a separate translation skill per language is no longer needed and its copy of code-lenses guidance can no longer drift.
+
+### Added
+
+- `clojuredart/references/flutter.md` says to keep the `f/widget` body and its `:let` bindings free of side effects, because Flutter can rebuild a widget many times, and names `:bg-watcher`, `:managed`, and event callbacks as the places for effects.
+- `clojuredart-nav` notes that go_router path and query parameters are strings and must be parsed in the route builder, for example with `(int/tryParse s)`.
+
 ## [0.1.28] - 2026-10-31
 
 ### Changed
