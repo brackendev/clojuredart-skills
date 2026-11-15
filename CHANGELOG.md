@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.1.31] - 2026-11-15
+
+### Added
+
+- `clojuredart` skill: the `references/simple-design.md` reference gives the ClojureDart constructs for Key Rule 20 of the `clojure` skill ("Choose simple over easy"). It covers state in atoms, a Dart `Stream` with a `StreamController` as the queue between components, the difference between a single-subscription and a broadcast controller, and protocols extended to Dart types with the `fallback` pseudotype as the catch-all. It records that in ClojureDart `0.9.20261002` `defmulti` and `defmethod` work inside one namespace, that a `defmethod` in another namespace fails to compile, and that a protocol extended from another namespace works. Every example was compiled with that release and run with Dart.
+
 ## [0.1.30] - 2026-10-31
 
 ### Changed

@@ -97,7 +97,7 @@ These skills activate from conversation context. They cannot be invoked directly
 
 | Skill | Triggers |
 |-------|----------|
-| **clojuredart** | `.cljd` files, `deps.edn` with `tensegritics/clojuredart`, `cljd-out/` directories, Flutter integration, ClojureDart REPL usage. Covers syntax, Dart interop, widget macros, exceptions and resource cleanup, project structure, compilation, REPL-driven development, the defrecord factory rule, and the absence of `with-redefs`. Defers to the [clojure](https://github.com/brackendev/clojure-skills) baseline for general style. The skill opens with Iron Laws (CLJD-1 through CLJD-3), rules that prevent lost work and runtime failures. The agent does not write code that breaks them, and it reports a violation it finds in existing code before changing it. |
+| **clojuredart** | `.cljd` files, `deps.edn` with `tensegritics/clojuredart`, `cljd-out/` directories, Flutter integration, ClojureDart REPL usage. Covers syntax, Dart interop, widget macros, exceptions and resource cleanup, simple design in ClojureDart (state in atoms, Dart streams as queues between components, and protocols extended to Dart types), project structure, compilation, REPL-driven development, the defrecord factory rule, and the absence of `with-redefs`. Defers to the [clojure](https://github.com/brackendev/clojure-skills) baseline for general style. The skill opens with Iron Laws (CLJD-1 through CLJD-3), rules that prevent lost work and runtime failures. The agent does not write code that breaks them, and it reports a violation it finds in existing code before changing it. |
 | **clojuredart-nav** | ClojureDart navigation discussions: named routes, `go_router`, the `Navigator` API, tab navigation, and deep linking in Flutter. |
 
 ## Hooks

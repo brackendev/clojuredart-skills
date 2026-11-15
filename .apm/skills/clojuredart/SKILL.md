@@ -50,6 +50,7 @@ The Iron Laws and Key Rules are the short form. Each reference file below holds 
 | Exceptions and catch types, `thrown?` in `cljd.test`, `with-open` and resource cleanup, or `M`, `N`, and ratio literals and money | `references/errors-and-resources.md` |
 | Namespace conventions, entry points, adding Dart packages, platform channels and FFI, or conditional reading | `references/project-structure.md` |
 | CLI commands, project layout, `deps.edn`, new project setup, clj-kondo setup, or tooling | `references/project-workflows.md` |
+| Passing values instead of atoms, putting a queue between components (a Dart `Stream` and `StreamController`), or extending a protocol to a Dart type | `references/simple-design.md` |
 
 ## Gotchas
 
